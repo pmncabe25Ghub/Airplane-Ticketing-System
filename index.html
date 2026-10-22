@@ -1,0 +1,2812 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Airplane Ticketing System</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap"
+    />
+    <style>
+      :root {
+        --bg: #f4f6fa;
+        --card: #fff;
+        --ink: #1b2333;
+        --mute: #5b6577;
+        --line: #d5dbe6;
+        --btn: #1b2333;
+        --btnt: #fff;
+        --red: #e5484d;
+        --redbg: #fde3e4;
+        --blue: #2f6fed;
+        --bluebg: #dbe8ff;
+        --cabin: #26304a;
+        --ok: #1f9d55;
+        box-sizing: border-box;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: #10141d;
+          --card: #1a2030;
+          --ink: #eef1f7;
+          --mute: #a3adc0;
+          --line: #323b52;
+          --btn: #eef1f7;
+          --btnt: #10141d;
+          --redbg: #4a2327;
+          --bluebg: #1f3358;
+          --cabin: #0b0f18;
+        }
+      }
+      :root[data-theme="dark"] {
+        --bg: #10141d;
+        --card: #1a2030;
+        --ink: #eef1f7;
+        --mute: #a3adc0;
+        --line: #323b52;
+        --btn: #eef1f7;
+        --btnt: #10141d;
+        --redbg: #4a2327;
+        --bluebg: #1f3358;
+        --cabin: #0b0f18;
+      }
+      :root[data-theme="dark"] .zone.lit.business {
+        color: #ffd3d5;
+      }
+      :root[data-theme="dark"] .zone.lit.economy {
+        color: #cfe0ff;
+      }
+      .theme-btn {
+        font: inherit;
+        font-weight: 800;
+        font-size: 15px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 14px;
+        border: 2px solid var(--line);
+        border-radius: 99px;
+        background: var(--bg);
+        color: var(--ink);
+        cursor: pointer;
+      }
+      .theme-btn:hover {
+        border-color: var(--blue);
+      }
+      html {
+        color-scheme: light dark;
+        scroll-padding-top: env(safe-area-inset-top, 0px);
+      }
+      :root[data-theme="light"] {
+        color-scheme: light;
+      }
+      :root[data-theme="dark"] {
+        color-scheme: dark;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font:
+          17px/1.5 Nunito,
+          system-ui,
+          sans-serif;
+      }
+      header {
+        background: var(--card);
+        border-bottom: 1px solid var(--line);
+        padding: 14px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      header b {
+        font-size: 20px;
+        font-weight: 800;
+      }
+      header span {
+        color: var(--mute);
+        font-size: 15px;
+      }
+      .steps {
+        display: flex;
+        gap: 6px;
+        padding: 14px 20px;
+        overflow-x: auto;
+        background: var(--card);
+        border-bottom: 1px solid var(--line);
+      }
+      .st {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        white-space: nowrap;
+        color: var(--mute);
+        font-size: 15px;
+        padding-right: 12px;
+      }
+      .st i {
+        font-style: normal;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 2px solid var(--line);
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+        font-size: 14px;
+      }
+      .st.on {
+        color: var(--ink);
+        font-weight: 800;
+      }
+      .st.on i {
+        background: var(--btn);
+        color: var(--btnt);
+        border-color: var(--btn);
+      }
+      .st.done i {
+        background: var(--ok);
+        border-color: var(--ok);
+        color: #fff;
+      }
+      main {
+        max-width: 1050px;
+        margin: 0 auto;
+        padding: 24px 20px 60px;
+      }
+      h1 {
+        font-size: 30px;
+        margin: 0 0 4px;
+      }
+      .sub {
+        color: var(--mute);
+        margin: 0 0 20px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 22px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+      }
+      label {
+        display: block;
+        font-weight: 800;
+        font-size: 15px;
+        margin-bottom: 6px;
+      }
+      input,
+      select {
+        width: 100%;
+        font: inherit;
+        padding: 12px 14px;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        background: var(--bg);
+        color: var(--ink);
+      }
+      input:focus,
+      select:focus,
+      button:focus-visible {
+        outline: 3px solid var(--blue);
+        outline-offset: 2px;
+      }
+
+      input[type="date"] {
+        color-scheme: light dark;
+      }
+      input[type="date"]::-webkit-calendar-picker-indicator {
+        width: 22px;
+        height: 22px;
+        cursor: pointer;
+        opacity: 1;
+        background: var(--ink);
+        -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cpath d='M16 2v4M8 2v4M3 10h18'/%3E%3C/svg%3E") center / contain no-repeat;
+        mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cpath d='M16 2v4M8 2v4M3 10h18'/%3E%3C/svg%3E") center / contain no-repeat;
+      }
+      .pcard{border:2px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:10px}
+      .pcard[data-p]{cursor:pointer}
+      .pcard.act{border-color:var(--blue);background:var(--bluebg)}
+      .pax{position:relative}
+      .pax-btn{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;font:inherit;padding:12px 14px;border:2px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);cursor:pointer}
+      .pax-btn .car{transition:transform .2s;color:var(--mute)}
+      .pax.open .pax-btn{border-color:var(--blue)}
+      .pax.open .car{transform:rotate(180deg)}
+      .pax-panel{display:none;position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:20;background:var(--card);border:2px solid var(--line);border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,.18);overflow:hidden;min-width:280px}
+      .pax.open .pax-panel{display:block}
+      .pax-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line)}
+      .pax-row b{display:block;font-weight:800}
+      .pax-row small{color:var(--mute);font-size:14px}
+      .pax-ctl{display:flex;align-items:center;gap:12px}
+      .pax-ctl button{width:36px;height:36px;font:inherit;font-size:20px;font-weight:800;line-height:1;border:2px solid var(--blue);border-radius:8px;background:transparent;color:var(--blue);cursor:pointer}
+      .pax-ctl button:disabled{opacity:.35;cursor:not-allowed;border-color:var(--line);color:var(--mute)}
+      .pax-ctl span{min-width:20px;text-align:center;font-weight:800}
+      .pax-foot{display:flex;justify-content:flex-end;align-items:center;gap:10px;padding:12px 16px;background:var(--bg)}
+      .pax-foot .hint{margin:0 auto 0 0}
+      .hint {
+        color: var(--mute);
+        font-size: 14px;
+        margin-top: 4px;
+      }
+      .err {
+        color: var(--red);
+        font-size: 14px;
+        margin-top: 4px;
+        font-weight: 600;
+      }
+      .btn {
+        font: inherit;
+        font-weight: 800;
+        padding: 13px 24px;
+        border-radius: 10px;
+        border: 2px solid var(--btn);
+        background: var(--btn);
+        color: var(--btnt);
+        cursor: pointer;
+      }
+      .btn.alt {
+        background: transparent;
+        color: var(--ink);
+      }
+      .btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        margin-top: 22px;
+        flex-wrap: wrap;
+      }
+      .flight {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+      }
+      .flight > div {
+        flex: 1;
+        min-width: 110px;
+      }
+      .flight .go {
+        flex: 0;
+      }
+      .big {
+        font-size: 26px;
+        font-weight: 800;
+        line-height: 1.1;
+      }
+      .mute {
+        color: var(--mute);
+        font-size: 15px;
+      }
+      .tag {
+        display: inline-block;
+        font-size: 13px;
+        font-weight: 800;
+        padding: 2px 10px;
+        border-radius: 99px;
+        border: 1px solid var(--line);
+        margin: 2px 4px 0 0;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 320px;
+        gap: 20px;
+        align-items: start;
+      }
+      .layout > div:last-child {
+        position: sticky;
+        top: 12px;
+        max-height: calc(100vh - 24px);
+        overflow-y: auto;
+      }
+      #map {
+        container-type: inline-size;
+      }
+      .plane {
+        --s: clamp(24px, 7.4cqw, 56px);
+        --aisle: clamp(36px, 8cqw, 56px);
+        --g: clamp(3px, 1.2cqw, 8px);
+        position: relative;
+        max-width: 760px;
+        margin: auto;
+        padding: 0 11cqw;
+      }
+      .cabin {
+        position: relative;
+        z-index: 2;
+        background: var(--cabin);
+        border-radius: 46% 46% 36px 36px / 150px 150px 36px 36px;
+        padding: 30px 5cqw 26px;
+        margin: auto;
+        width: 100%;
+        box-shadow: inset 0 0 0 4px #ffffff22;
+      }
+      .cockpit {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin: 34px 0 6px;
+      }
+      .cockpit i {
+        width: 44px;
+        height: 18px;
+        background: #8fb4ff55;
+        border-radius: 4px 4px 14px 14px;
+      }
+      .tail {
+        text-align: center;
+        color: #cfd6e6;
+        font-weight: 800;
+        font-size: 13px;
+        margin-top: 6px;
+        opacity: 0.8;
+      }
+      .cols {
+        display: grid;
+        grid-template-columns: 1fr var(--aisle) 1fr;
+        font-weight: 800;
+        font-size: 14px;
+        opacity: 0.8;
+        margin-bottom: 6px;
+      }
+      .cols .pair {
+        gap: var(--g);
+      }
+      .cols .pair span {
+        width: var(--s);
+        text-align: center;
+      }
+      .business .cols .pair span,
+      .business .seat {
+        width: calc(var(--s) * 1.45);
+      }
+      .nose {
+        text-align: center;
+        color: #cfd6e6;
+        font-weight: 800;
+        font-size: 14px;
+        margin-bottom: 12px;
+      }
+      .zone {
+        position: relative;
+        border: 3px solid transparent;
+        border-radius: 14px;
+        padding: 10px 12px;
+        margin-bottom: 10px;
+        background: #ffffff14;
+        color: #cfd6e6;
+        opacity: 0.6;
+        transition: 0.25s;
+      }
+      .zone.lit {
+        opacity: 1;
+      }
+      .zone.lit.business {
+        background: var(--redbg);
+        border-color: var(--red);
+        color: #7a1418;
+        box-shadow: 0 0 22px #e5484d99;
+      }
+      .zone.lit.comfort {
+        background: #fff;
+        border-color: #fff;
+        color: #1b2333;
+        box-shadow: 0 0 22px #ffffffcc;
+      }
+      .zone.lit.economy {
+        background: var(--bluebg);
+        border-color: var(--blue);
+        color: #12337a;
+        box-shadow: 0 0 22px #2f6fedaa;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) .zone.lit.business {
+          color: #ffd3d5;
+        }
+        :root:not([data-theme="light"]) .zone.lit.economy {
+          color: #cfe0ff;
+        }
+      }
+      .zh {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 800;
+        margin-bottom: 8px;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .chip {
+        font-size: 13px;
+        font-weight: 800;
+        padding: 2px 10px;
+        border-radius: 99px;
+        background: #00000026;
+      }
+      .zone.lit.comfort .chip {
+        background: #1b233218;
+      }
+      .srow {
+        position: relative;
+        display: grid;
+        grid-template-columns: 1fr var(--aisle) 1fr;
+        align-items: center;
+        margin-bottom: calc(var(--g) + 2px);
+      }
+      .srow::before,
+      .srow::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        width: 5px;
+        height: 22px;
+        margin-top: -11px;
+        border-radius: 3px;
+        background: #8fb4ff88;
+      }
+      .srow::before {
+        left: -3cqw;
+      }
+      .srow::after {
+        right: -3cqw;
+      }
+      .srow .pair:first-child {
+        justify-self: start;
+      }
+      .srow .pair:last-child {
+        justify-self: end;
+      }
+      .pair {
+        display: flex;
+        gap: var(--g);
+      }
+      .rn {
+        font-size: clamp(11px, 2.4vw, 14px);
+        font-weight: 800;
+        opacity: 0.7;
+        text-align: center;
+      }
+      .seat {
+        width: var(--s);
+        height: calc(var(--s) * 1.05);
+        border-radius: 10px 10px 6px 6px;
+        border: 2px solid #1b2333;
+        border-bottom-width: 5px;
+        background: #fff;
+        color: #1b2333;
+        font:
+          800 clamp(11px, 2.6vw, 15px) Nunito,
+          sans-serif;
+        cursor: pointer;
+        line-height: 1.1;
+        padding: 0;
+      }
+      .seat small {
+        display: block;
+        font-size: 11px;
+      }
+      .seat:hover:not(:disabled) {
+        transform: scale(1.08);
+      }
+      .seat:disabled {
+        background: #c9cfdb;
+        border-color: #aab2c3;
+        color: #7c8598;
+        cursor: not-allowed;
+      }
+      .seat.held:disabled {
+        background: #ffe9a8;
+        border-color: #e6b84a;
+        color: #7a5b00;
+      }
+      #holdbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 14px;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 600;
+        padding: 8px 14px;
+        background: var(--card);
+        color: var(--ink);
+        border-bottom: 1px solid var(--line);
+        position: sticky;
+        top: 0;
+        z-index: 30;
+      }
+      #holdbar .hb {
+        font: inherit;
+        font-size: 13px;
+        padding: 3px 12px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: var(--card);
+        color: var(--ink);
+        cursor: pointer;
+      }
+      #holdbar .warn { color: var(--red); }
+      .seat.sel {
+        background: #1b2333;
+        color: #fff;
+        outline: 3px solid #ffd43b;
+      }
+      .seat.pwd {
+        border-color: #7b3fe4;
+        border-width: 3px;
+      }
+      .glow .seat.pwd:not(:disabled) {
+        animation: pul 1.2s infinite;
+      }
+      @keyframes pul {
+        50% {
+          box-shadow: 0 0 0 6px #7b3fe488;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .glow .seat.pwd {
+          animation: none;
+          box-shadow: 0 0 0 5px #7b3fe488;
+        }
+      }
+      .exit {
+        position: relative;
+        background: #ffd43b;
+        color: #1b2333;
+        font-weight: 800;
+        font-size: 13px;
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 12px;
+        border-radius: 6px;
+        margin: 4px 0 12px;
+      }
+      .exit.wing::before,
+      .exit.wing::after {
+        content: "";
+        position: absolute;
+        top: -8px;
+        height: 230px;
+        width: 17cqw;
+        background: linear-gradient(#3b4868, #2a3552);
+        z-index: -1;
+        pointer-events: none;
+      }
+      .exit.wing::before {
+        right: 100%;
+        margin-right: 0;
+        clip-path: polygon(100% 0, 0 70%, 0 100%, 100% 60%);
+      }
+      .exit.wing::after {
+        left: 100%;
+        margin-left: 0;
+        clip-path: polygon(0 0, 100% 70%, 100% 100%, 0 60%);
+      }
+      .rows {
+        position: relative;
+      }
+      .bin {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 12px;
+        writing-mode: vertical-rl;
+        font-size: 9px;
+        line-height: 10px;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        border: 2px dashed currentColor;
+        border-radius: 6px;
+        background: repeating-linear-gradient(45deg, transparent 0 6px, #ffffff1f 6px 12px);
+        opacity: 0.6;
+        pointer-events: none;
+        z-index: 0;
+      }
+      .bin.l {
+        left: calc(50% - var(--aisle) / 2);
+        transform: rotate(180deg);
+      }
+      .bin.r {
+        left: calc(50% + var(--aisle) / 2 - 12px);
+      }
+      .rn {
+        position: relative;
+        z-index: 1;
+      }
+      .key {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .key li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+        font-size: 15px;
+      }
+      .sw {
+        width: 22px;
+        height: 22px;
+        border-radius: 5px;
+        border: 2px solid #1b2333;
+        flex: none;
+      }
+      .sum {
+        display: flex;
+        justify-content: space-between;
+        padding: 7px 0;
+        border-bottom: 1px solid var(--line);
+        gap: 12px;
+      }
+      .sum b {
+        text-align: right;
+      }
+      .ticket {
+        border: 2px solid var(--ink);
+        border-radius: 14px;
+        overflow: hidden;
+        display: flex;
+        flex-wrap: wrap;
+        margin: 18px 0;
+      }
+      .ticket > div:first-child {
+        flex: 1;
+        padding: 20px;
+        min-width: 260px;
+      }
+      .stub {
+        background: var(--bg);
+        padding: 20px;
+        text-align: center;
+        display: grid;
+        place-items: center;
+        border-left: 2px dashed var(--line);
+      }
+      .tg {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+        margin-top: 14px;
+      }
+      .ok {
+        width: 68px;
+        height: 68px;
+        border-radius: 50%;
+        background: var(--ok);
+        color: #fff;
+        font-size: 36px;
+        display: grid;
+        place-items: center;
+        margin: 0 auto 10px;
+      }
+      .ck {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        font-weight: 600;
+      }
+      .ck input {
+        width: 24px;
+        height: 24px;
+        margin-top: 2px;
+      }
+      .note {
+        background: var(--bluebg);
+        border-radius: 10px;
+        padding: 10px 14px;
+        margin-top: 14px;
+        font-size: 15px;
+      }
+      .ppbox{border:2px dashed var(--blue);border-radius:12px;padding:14px;background:var(--bluebg)}
+      .pms{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+      .pm{display:flex;align-items:center;gap:10px;text-align:left;font:inherit;padding:12px;border:2px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);cursor:pointer}
+      .pm small{display:block;color:var(--mute);font-size:13px;font-weight:600}
+      .pm .pmi{font-size:26px}
+      .pm.on{border-color:var(--blue);background:var(--bluebg)}
+      .spin{width:44px;height:44px;border:5px solid var(--line);border-top-color:var(--blue);border-radius:50%;margin:0 auto 14px;animation:sp .8s linear infinite}
+      @keyframes sp{to{transform:rotate(360deg)}}
+      @media (max-width:520px){.pms{grid-template-columns:1fr}}
+      .ovl{position:fixed;inset:0;background:rgba(0,0,0,.6);display:grid;place-items:center;padding:20px;z-index:50;overflow:auto}
+      .dlg{max-width:520px;width:100%}
+      @media (max-width: 800px) {
+        .grid,
+        .layout {
+          grid-template-columns: 1fr;
+        }
+        .layout > div:last-child {
+          position: static;
+          max-height: none;
+        }
+        .tg {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media print {
+        header,
+        .steps,
+        .row,
+        .note {
+          display: none;
+        }
+        body {
+          background: #fff;
+        }
+      }
+    .seg{display:inline-flex;border:2px solid var(--line);border-radius:99px;overflow:hidden}
+      .segb{font:inherit;font-weight:800;padding:9px 20px;border:0;background:transparent;color:var(--ink);cursor:pointer}
+      .segb.on{background:var(--btn);color:var(--btnt)}
+      .tag.pref{border-color:var(--blue);background:var(--bluebg)}
+      .hero{text-align:center;padding:40px 22px}
+      .feat{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:26px 0;text-align:left}
+      @media (max-width:800px){.feat{grid-template-columns:1fr}}
+      .cb{position:relative}
+      .cbl{display:none;position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:30;max-height:240px;overflow-y:auto;margin:0;padding:4px;list-style:none;background:var(--card);border:2px solid var(--line);border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.18)}
+      .cbl li{padding:9px 12px;border-radius:8px;cursor:pointer}
+      .cbl li.on,.cbl li:hover{background:var(--bluebg)}
+      .cbl li.none{color:var(--mute);cursor:default}
+      .food{margin:0 0 10px;border:1px solid currentColor;border-radius:10px;padding:6px 10px;background:#ffffff22}
+      .food summary{cursor:pointer;font-weight:800;font-size:14px}
+      .food ul{margin:8px 0 2px;padding-left:18px;font-size:13.5px;line-height:1.4}
+      .food li{margin-bottom:8px}
+      .promo{display:flex;gap:16px;align-items:center;flex-wrap:wrap;background:var(--bluebg);border:2px solid var(--blue);border-radius:14px;padding:16px 20px;margin-bottom:20px}
+      .bar{height:14px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 6px}
+      .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--ok))}
+      .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px}
+      .stat b{font-size:26px;display:block;line-height:1.2}
+      .tw{overflow-x:auto}
+      .tbl{width:100%;border-collapse:collapse;font-size:15px;margin-top:10px}
+      .tbl th,.tbl td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+      .tbl input:not([type="checkbox"]),.tbl select{padding:7px 9px;min-width:90px}
+      .tbl input[type="checkbox"]{width:22px;height:22px}
+      .seg.wrap{flex-wrap:wrap;border-radius:18px}
+      .fgrp{padding:10px 0}
+      .fgrp+.fgrp{border-top:1px solid var(--line)}
+      .fh{font-weight:800;font-size:15px;margin-bottom:6px}
+      .fgrp.cur .fh::after{content:"Your cabin";font-size:12px;font-weight:800;margin-left:8px;padding:2px 8px;border-radius:99px;background:var(--bluebg);color:var(--ink)}
+      .fl{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+      .fl li{font-size:14px;font-weight:600;padding:3px 10px;border:1px solid var(--line);border-radius:99px;background:var(--bg)}
+      .pwrow{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    </style>
+  </head>
+  <body>
+    <header>
+      <b>✈ Airplane Ticketing System</b
+      ><span>Philippine Aviation Portal · Domestic flights only</span>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="theme-btn" id="acctBtn">👤 Log in</button><button type="button" class="theme-btn" id="outBtn" style="display:none">Log out</button><button type="button" class="theme-btn" id="themeBtn" aria-label="Switch theme"></button></div>
+    </header>
+    <nav class="steps" id="steps" aria-label="Booking steps"></nav>
+    <main id="app"></main>
+    <script>
+      const CITY = {
+        MNL: "Manila",
+        CRK: "Clark",
+        CEB: "Cebu",
+        DVO: "Davao",
+        MPH: "Boracay",
+        ILO: "Iloilo",
+        PPS: "Puerto Princesa",
+      };
+      const FL = [
+        {
+          id: "PE-204",
+          air: "PH Express",
+          from: "MNL",
+          to: "CEB",
+          dep: "08:30",
+          arr: "09:45",
+          gate: "Gate 12B",
+        },
+        {
+          id: "PE-310",
+          air: "PH Express",
+          from: "MNL",
+          to: "ILO",
+          dep: "07:10",
+          arr: "08:25",
+          gate: "Gate 9",
+        },
+        {
+          id: "AP-440",
+          air: "Air Philippines",
+          from: "MNL",
+          to: "DVO",
+          dep: "11:15",
+          arr: "13:00",
+          gate: "Gate 04",
+        },
+        {
+          id: "AP-512",
+          air: "Air Philippines",
+          from: "MNL",
+          to: "CEB",
+          dep: "15:40",
+          arr: "16:55",
+          gate: "Gate 06",
+        },
+        {
+          id: "AP-620",
+          air: "Air Philippines",
+          from: "MNL",
+          to: "PPS",
+          dep: "09:20",
+          arr: "10:50",
+          gate: "Gate 11",
+        },
+        {
+          id: "MI-102",
+          air: "Metro Island Air",
+          from: "CRK",
+          to: "MPH",
+          dep: "14:20",
+          arr: "15:15",
+          gate: "Gate 2",
+        },
+        {
+          id: "MI-118",
+          air: "Metro Island Air",
+          from: "MNL",
+          to: "MPH",
+          dep: "06:45",
+          arr: "07:50",
+          gate: "Gate 3",
+        },
+        {
+          id: "MI-230",
+          air: "Metro Island Air",
+          from: "CRK",
+          to: "CEB",
+          dep: "12:05",
+          arr: "13:20",
+          gate: "Gate 1",
+        },
+      ];
+      const CLS = {
+        business: {
+          n: "Business Class",
+          rows: [1, 2, 3, 4],
+          L: "AB",
+          R: "CD",
+          c: "🔴",
+        },
+        comfort: {
+          n: "Comfort Class",
+          rows: [5, 6, 7, 8, 9],
+          L: "ABC",
+          R: "DEF",
+          c: "⚪",
+        },
+        economy: {
+          n: "Economy Class",
+          rows: [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24],
+          L: "ABC",
+          R: "DEF",
+          c: "🔵",
+        },
+      };
+      const PWD = ["11C", "11D", "13C", "13D", "16C", "16D", "21C", "21D"];
+      // Pricing (demo one-way fares in PHP per seat), set separately for each cabin.
+      // Typical ranges: Economy ~P1,200-13,000+, Comfort a step above Economy, Business ~P8,000-20,000+.
+      const FARE = {
+        "PE-204": { economy: 2800, comfort: 4200, business: 9500 },
+        "PE-310": { economy: 2600, comfort: 3900, business: 9000 },
+        "AP-440": { economy: 3400, comfort: 5200, business: 12500 },
+        "AP-512": { economy: 3100, comfort: 4700, business: 11000 },
+        "AP-620": { economy: 3000, comfort: 4500, business: 10500 },
+        "MI-102": { economy: 2400, comfort: 3600, business: 8500 },
+        "MI-118": { economy: 2700, comfort: 4000, business: 9500 },
+        "MI-230": { economy: 2500, comfort: 3800, business: 8800 },
+      };
+      FL.push(
+        { id: "PE-402", air: "PH Express", from: "CEB", to: "DVO", dep: "10:00", arr: "11:10", gate: "Gate 5" },
+        { id: "AP-705", air: "Air Philippines", from: "CEB", to: "ILO", dep: "13:10", arr: "14:00", gate: "Gate 8" },
+        { id: "MI-340", air: "Metro Island Air", from: "CEB", to: "PPS", dep: "07:30", arr: "08:50", gate: "Gate 7" },
+      );
+      Object.assign(FARE, {
+        "PE-402": { economy: 2300, comfort: 3500, business: 8200 },
+        "AP-705": { economy: 2000, comfort: 3100, business: 7600 },
+        "MI-340": { economy: 2500, comfort: 3800, business: 8800 },
+      });
+      const mins = (t) => { const [h, m] = t.split(":").map(Number); return h * 60 + m; };
+      const tm = (t, add) => { const x = (mins(t) + add + 1440) % 1440; return String(Math.floor(x / 60)).padStart(2, "0") + ":" + String(x % 60).padStart(2, "0"); };
+      // every route also flies the other way, so people can start from any city and book return trips
+      FL.slice().forEach((f, n) => {
+        const id = f.id.slice(0, 3) + (+f.id.slice(3) + 1),
+          dep = tm(f.arr, 150 + (n % 3) * 90),
+          dur = (mins(f.arr) - mins(f.dep) + 1440) % 1440;
+        FL.push({ id, air: f.air, from: f.to, to: f.from, dep, arr: tm(dep, dur), gate: "Gate " + (n % 12 + 1) });
+        FARE[id] = { ...FARE[f.id] };
+      });
+      const fareOf = (flightId, cls) => FARE[flightId][cls];
+      const PERKS = {
+        economy: "Standard seat, carry-on included",
+        comfort: "25 kg baggage, dedicated check-in, priority boarding, lounge access",
+        business: "Lie-flat comfort, extra baggage, lounge access, priority everything",
+      };
+      const DISC = 0.2; // Senior and PWD discount
+      const DISC_TYPES = ["senior", "pwd"];
+      const peso = (n) => "₱" + Math.round(n).toLocaleString("en-PH");
+      const EXITROWS = [9, 10, 17, 18];
+      const LAVROWS = [1, 5, 10, 24];
+      const S = {
+        step: 0,
+        from: "MNL",
+        to: "",
+        date: "2026-11-15",
+        cab: "economy",
+        pax: { adult: 0, child: 0, infant: 0, senior: 0, pwd: 0 },
+        flight: null,
+        seats: [],
+        ps: [],
+        ref: "",
+      };
+      // each trip has up to 2 legs (outbound, return); S.flight and S.seats always point at the current leg
+      delete S.flight; delete S.seats;
+      S.trip = "one"; S.ret = ""; S.leg = 0;
+      S.L = [{ flight: null, seats: [] }, { flight: null, seats: [] }];
+      Object.defineProperty(S, "flight", { get() { return S.L[S.leg].flight; }, set(v) { S.L[S.leg].flight = v; } });
+      Object.defineProperty(S, "seats", { get() { return S.L[S.leg].seats; }, set(v) { S.L[S.leg].seats = v; } });
+      const today = () => { const d = new Date(); return new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10); };
+      const $ = (s) => document.querySelector(s),
+        app = $("#app");
+      const hash = (s) => {
+        let h = 7;
+        for (const c of s) h = (h * 31 + c.charCodeAt(0)) % 1000;
+        return h;
+      };
+
+      // ---- Live seat holds: stops two people booking the same seat ----
+      // A seat chosen by someone is "held" for HOLD_MS (nobody else can pick it), then becomes "booked"
+      // once payment succeeds. Holds expire by themselves, so an abandoned booking never blocks a seat.
+      // Storage: shared artifact database (all devices) -> falls back to this browser's tabs -> memory only.
+      const HOLD_MS = 10 * 60 * 1000;
+      const curDate = () => (S.leg ? S.ret : S.date);
+      const HOLD = (() => {
+        const sid = "t" + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+        const H = { sid, mode: "mem", map: {}, mine: {}, deadline: 0, note: "", owner: false, ready: false, onchange: () => {} };
+        let db = null, col = null, bc = null;
+        const LSK = "seatholds_v1";
+        const key = (fid, date, seat) => String(fid).replace(/[^A-Za-z0-9_-]/g, "-") + "_" + date + "_" + seat;
+        const live = (e) => !!e && (e.st == "booked" || e.until > Date.now());
+        const lsRead = () => JSON.parse(localStorage.getItem(LSK) || "{}");
+        const lsWrite = (m) => { localStorage.setItem(LSK, JSON.stringify(m)); try { bc && bc.postMessage(1); } catch (e) {} };
+        const lsPrune = (m) => { for (const k in m) if (!live(m[k])) delete m[k]; return m; };
+        const withLock = (fn) => (navigator.locks ? navigator.locks.request(LSK, fn) : Promise.resolve(fn()));
+        const pull = () => { try { H.map = lsRead(); } catch (e) {} H.onchange(); };
+        H.state = (fid, date, seat) => { const e = H.map[key(fid, date, seat)]; return live(e) && (e.owner != sid || e.st == "booked") ? e.st : null; };
+        H.isTaken = (fid, date, seat) => !!H.state(fid, date, seat);
+        H.forget = (fid, date, seat) => { delete H.mine[key(fid, date, seat)]; if (!Object.keys(H.mine).length) H.deadline = 0; };
+        const fallback = (why) => {
+          if (H.mode == "local") return;
+          if (why) H.note = why;
+          try {
+            localStorage.setItem(LSK + "_t", "1"); localStorage.removeItem(LSK + "_t");
+            bc = window.BroadcastChannel ? new BroadcastChannel(LSK) : null;
+            if (bc) bc.onmessage = pull;
+            addEventListener("storage", (e) => { if (e.key == LSK) pull(); });
+            H.mode = "local"; pull();
+          } catch (e) { H.mode = "mem"; }
+          H.ready = true; H.onchange();
+        };
+        H.init = async () => {
+          try {
+            const c = window.claude && window.claude.use ? await window.claude.use("db") : null;
+            if (c) {
+              db = c; col = c.collection("seatholds"); H.mode = "db";
+              col.onSnapshot((snap) => { const m = {}; snap.docs.forEach((d) => { m[d.id] = d.data(); }); H.map = m; H.ready = true; H.onchange(); }, () => { H.mode = "mem"; fallback("Shared live seats lost connection."); });
+              try { const u = await window.claude.use("user"); H.owner = !!(u && u.isOwner && u.isOwner()); } catch (e) {}
+              H.ready = true; H.onchange(); return;
+            }
+          } catch (e) {}
+          fallback();
+        };
+        const put = async (k, rec) => {
+          if (H.mode == "db") { await col.doc(k).set(rec); }
+          else if (H.mode == "local") { await withLock(() => { const m = lsPrune(lsRead()); m[k] = rec; lsWrite(m); H.map = m; }); }
+          H.map[k] = rec;
+        };
+        H.claim = async (fid, date, seat) => {
+          const k = key(fid, date, seat), now = Date.now();
+          if (!H.deadline || H.deadline < now) H.deadline = now + HOLD_MS;
+          const rec = { owner: sid, st: "held", until: H.deadline, f: String(fid), d: date, s: seat };
+          const ok = () => { H.map[k] = rec; H.mine[k] = { fid, date, seat }; H.onchange(); return true; };
+          if (H.mode == "db") {
+            try {
+              const ref = col.doc(k);
+              // only one person can claim this seat at a time; if someone is mid-claim, wait for their lease to lapse and try once more
+              let a = await ref.acquire({ holder: sid, ttlMs: 1000 });
+              if (!a.acquired) {
+                const wait = a.expiresAt ? Math.min(1300, Math.max(0, new Date(a.expiresAt).getTime() - Date.now()) + 60) : 600;
+                await new Promise((r) => setTimeout(r, wait));
+                a = await ref.acquire({ holder: sid, ttlMs: 1000 });
+                if (!a.acquired) return false;
+              }
+              const snap = await ref.get(), e = snap.exists ? snap.data() : null;
+              if (live(e) && e.owner != sid) return false;
+              await ref.set(rec);
+              return ok();
+            } catch (e) {
+              if (e && ["invalid_argument", "revoked", "not_granted", "capability_disabled"].includes(e.code)) {
+                H.mode = "mem"; fallback("This visitor can't write to the shared database, so live seats only work in this browser.");
+                return H.claim(fid, date, seat);
+              }
+              return false;
+            }
+          }
+          if (H.mode == "local") {
+            try {
+              return await withLock(() => {
+                const m = lsPrune(lsRead()), e = m[k];
+                if (live(e) && e.owner != sid) { H.map = m; H.onchange(); return false; }
+                m[k] = rec; lsWrite(m); H.map = m; return ok();
+              });
+            } catch (e) { H.mode = "mem"; }
+          }
+          const e = H.map[k];
+          if (live(e) && e.owner != sid) return false;
+          return ok();
+        };
+        H.release = async (fid, date, seat) => {
+          const k = key(fid, date, seat), e = H.map[k];
+          H.forget(fid, date, seat);
+          if (!e || e.owner != sid || e.st == "booked") { H.onchange(); return; }
+          delete H.map[k]; H.onchange();
+          try {
+            if (H.mode == "db") await col.doc(k).delete();
+            else if (H.mode == "local") await withLock(() => { const m = lsPrune(lsRead()); if (m[k] && m[k].owner == sid && m[k].st == "held") delete m[k]; lsWrite(m); H.map = m; });
+          } catch (x) {}
+        };
+        H.extend = async () => {
+          H.deadline = Date.now() + HOLD_MS;
+          for (const k of Object.keys(H.mine)) {
+            const e = H.map[k];
+            if (e && e.owner == sid && e.st == "held") { try { await put(k, { ...e, until: H.deadline }); } catch (x) {} }
+          }
+          H.onchange();
+        };
+        // Turns holds into permanent bookings. Checks every seat first; if any was lost, books nothing.
+        H.confirm = async () => {
+          const lost = [];
+          for (const k of Object.keys(H.mine)) {
+            let cur = H.map[k];
+            try {
+              if (H.mode == "db") { const sn = await col.doc(k).get(); cur = sn.exists ? sn.data() : null; }
+              else if (H.mode == "local") cur = lsRead()[k];
+            } catch (x) {}
+            if (cur && cur.owner != sid && live(cur)) lost.push(H.mine[k]);
+          }
+          if (lost.length) return lost;
+          for (const k of Object.keys(H.mine)) {
+            const m = H.mine[k];
+            try { await put(k, { owner: sid, st: "booked", until: 0, f: String(m.fid), d: m.date, s: m.seat }); } catch (x) {}
+          }
+          H.mine = {}; H.deadline = 0; H.onchange();
+          return lost;
+        };
+        // release any hold that is no longer part of this booking (changed seat, flight, date)
+        H.reconcile = () => {
+          const want = new Set();
+          for (let li = 0; li < LEGS(); li++) { const l = S.L[li]; if (l.flight) l.seats.forEach((x) => x && want.add(key(l.flight.id, li ? S.ret : S.date, x))); }
+          Object.keys(H.mine).forEach((k) => { if (!want.has(k)) { const m = H.mine[k]; H.release(m.fid, m.date, m.seat); } });
+        };
+        H.free = async (fid, date, seat) => {
+          if (!seat) return true;
+          const k = key(fid, date, seat);
+          delete H.map[k]; delete H.mine[k]; H.onchange();
+          try {
+            if (H.mode == "db") { await col.doc(k).delete(); const sn = await col.doc(k).get(); if (sn.exists) return false; }
+            else if (H.mode == "local") await withLock(() => { const m = lsPrune(lsRead()); delete m[k]; lsWrite(m); H.map = m; });
+          } catch (x) { return false; }
+          return true;
+        };
+        H.liveList = () => Object.values(H.map).filter(live);
+        H.reset = async () => {
+          try {
+            if (H.mode == "db") { const snap = await col.get(); for (const d of snap.docs) await col.doc(d.id).delete(); }
+            else if (H.mode == "local") await withLock(() => { localStorage.removeItem(LSK); try { bc && bc.postMessage(1); } catch (e) {} });
+          } catch (x) {}
+          H.map = {}; H.mine = {}; H.deadline = 0; S.L.forEach((l) => { l.seats = l.seats.map(() => null); });
+          H.onchange();
+        };
+        return H;
+      })();
+      // ===================== Extras: storage, accounts, miles, food, Wi-Fi, admin =====================
+      Object.assign(S, { view: "", am: "in", at: "overview", fo: {}, wifi: {}, bag: {}, rw: "", earned: 0, rwUsed: "", admIn: false, fails: 0, lockUntil: 0 });
+      const MEMDB = {};
+      const ld = (k, d) => { try { const v = localStorage.getItem(k); if (v != null) return JSON.parse(v); } catch (e) {} return k in MEMDB ? JSON.parse(MEMDB[k]) : d; };
+      const sv = (k, v) => { MEMDB[k] = JSON.stringify(v); try { localStorage.setItem(k, MEMDB[k]); } catch (e) {} };
+      const xe = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+      const flash = (m) => {
+        const d = document.createElement("div");
+        d.setAttribute("role", "status");
+        d.style.cssText = "position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--btn);color:var(--btnt);padding:10px 18px;border-radius:99px;font-weight:800;z-index:60;max-width:90vw;text-align:center";
+        d.textContent = m;
+        document.body.appendChild(d);
+        setTimeout(() => d.remove(), 2800);
+      };
+      // Demo-only password scrambling. This is NOT real security: a real site needs a server.
+      const pwHash = (s) => {
+        let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+        s = "ap$" + s;
+        for (let i = 0, c; i < s.length; i++) { c = s.charCodeAt(i); h1 = Math.imul(h1 ^ c, 2654435761); h2 = Math.imul(h2 ^ c, 1597334677); }
+        h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+        h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+        return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(36);
+      };
+      // Real password handling: random salt per account + PBKDF2-SHA256 (150,000 rounds) via Web Crypto.
+      // (Falls back to the old scramble only where Web Crypto is unavailable.)
+      const SUB = window.crypto && crypto.subtle;
+      const b64 = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf)));
+      const newSalt = () => b64(crypto.getRandomValues(new Uint8Array(16)));
+      async function kdf(pw, salt) {
+        if (!SUB) return "L:" + pwHash(salt + pw);
+        const k = await SUB.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveBits"]);
+        return b64(await SUB.deriveBits({ name: "PBKDF2", salt: new TextEncoder().encode(salt), iterations: 150000, hash: "SHA-256" }, k, 256));
+      }
+      const makePw = async (pw) => { const salt = newSalt(); return { salt, h: await kdf(pw, salt) }; };
+      const checkPw = async (rec, pw) => (rec.h ? (await kdf(pw, rec.salt)) === rec.h : rec.pw === pwHash(pw)); // old accounts still log in, then get upgraded
+      const pwProblem = (p) => (p.length < 8 ? "Password must be at least 8 characters." : !/[A-Za-z]/.test(p) || !/\d/.test(p) ? "Password needs at least one letter and one number." : "");
+      const pwStrength = (p) => {
+        if (!p) return "";
+        let s = 0; if (p.length >= 8) s++; if (p.length >= 12) s++; if (/[a-z]/.test(p) && /[A-Z]/.test(p)) s++; if (/\d/.test(p)) s++; if (/[^A-Za-z0-9]/.test(p)) s++;
+        return "Strength: " + (s <= 2 ? "weak" : s == 3 ? "okay" : "strong");
+      };
+      // failed-login throttle (saved, so a refresh doesn't reset it)
+      const FAILS = () => ld("ap_fails", {});
+      const lockLeft = (k) => { const f = FAILS()[k]; return f && f.until > Date.now() ? Math.ceil((f.until - Date.now()) / 1000) : 0; };
+      const failAdd = (k) => { const a = FAILS(), f = a[k] || { n: 0, until: 0 }; f.n++; if (f.n >= 5) f.until = Date.now() + Math.min(15 * 60e3, 30e3 * 2 ** (f.n - 5)); a[k] = f; sv("ap_fails", a); };
+      const failClear = (k) => { const a = FAILS(); delete a[k]; sv("ap_fails", a); };
+
+      // approximate air miles between cities
+      const DIST = { "CEB-MNL": 355, "ILO-MNL": 280, "DVO-MNL": 600, "MNL-PPS": 365, "CRK-MPH": 200, "MNL-MPH": 175, "CEB-CRK": 340, "CEB-DVO": 250, "CEB-ILO": 100, "CEB-PPS": 375 };
+      const dist = (a, b) => DIST[[a, b].sort().join("-")] || 300;
+      const MULT = { economy: 1, comfort: 1.25, business: 1.5 };
+      const FARE0 = JSON.parse(JSON.stringify(FARE));
+      const DEF = () => ({
+        admin: { user: "admin", pw: pwHash("admin123") },
+        fares: {},
+        off: [],
+        noWifi: FL.filter((f) => hash(f.id) % 5 == 0).map((f) => f.id),
+        wifi: [
+          { id: "lite", name: "Wi-Fi Lite", price: 149, cap: 60, on: true, desc: "Messaging and light browsing", speed: "Up to 2 Mbps" },
+          { id: "std", name: "Wi-Fi Standard", price: 299, cap: 50, on: true, desc: "Social media, email and web browsing", speed: "Up to 10 Mbps" },
+          { id: "stream", name: "Wi-Fi Streaming", price: 499, cap: 30, on: true, desc: "Video streaming and music", speed: "Up to 25 Mbps" },
+          { id: "work", name: "Wi-Fi Work Pro", price: 699, cap: 20, on: true, desc: "Video calls, VPN and large uploads", speed: "Up to 40 Mbps" },
+        ],
+        bag: {
+          allow: { economy: { chk: 15, cab: 7 }, comfort: { chk: 25, cab: 10 }, business: { chk: 40, cab: 10 } },
+          extras: [{ kg: 5, price: 350, on: true }, { kg: 10, price: 650, on: true }, { kg: 20, price: 1200, on: true }, { kg: 30, price: 1700, on: true }],
+        },
+        tiers: [
+          { id: "wifi", miles: 1000, type: "wifi", value: 0, on: true },
+          { id: "voucher", miles: 2500, type: "voucher", value: 1000, on: true },
+          { id: "flight", miles: 5000, type: "flight", value: 0, on: true },
+        ],
+      });
+      const CFG = Object.assign(DEF(), ld("ap_cfg", {}));
+      // ---- Shared database sync ----
+      // Accounts, bookings and settings are cached in this browser (so the page works instantly and offline)
+      // and mirrored to the artifact database when it is available, so accounts survive across devices.
+      const DBS = { db: null, ready: false, q: Promise.resolve(), snap: { accounts: {}, bookings: {}, settings: "" } };
+      const dkey = (x) => String(x).replace(/[^A-Za-z0-9_\-.~:@+]/g, (c) => "~" + c.charCodeAt(0).toString(16) + "~").slice(0, 190);
+      const dbq = (fn) => (DBS.q = DBS.q.then(fn).catch(() => {}));
+      const dbPush = (col, map) => {
+        if (!DBS.db) return;
+        const snap = DBS.snap[col], next = {};
+        Object.keys(map).forEach((k) => (next[k] = JSON.stringify(map[k])));
+        Object.keys(next).forEach((k) => { if (snap[k] !== next[k]) dbq(() => DBS.db.collection(col).doc(dkey(k)).set(JSON.parse(next[k]))); });
+        Object.keys(snap).forEach((k) => { if (!(k in next)) dbq(() => DBS.db.collection(col).doc(dkey(k)).delete()); });
+        DBS.snap[col] = next;
+      };
+      const saveCfg = () => {
+        sv("ap_cfg", CFG);
+        if (!DBS.db) return;
+        const { admin, ...pub } = CFG, j = JSON.stringify(pub); // admin login stays on this device only
+        if (j !== DBS.snap.settings) { DBS.snap.settings = j; dbq(() => DBS.db.doc("settings/cfg").set(JSON.parse(j))); }
+      };
+      const applyFares = () => { Object.keys(FARE0).forEach((id) => { FARE[id] = { ...FARE0[id], ...(CFG.fares[id] || {}) }; }); };
+      applyFares();
+      const USERS = () => ld("ap_users", {});
+      const saveUsers = (u) => { sv("ap_users", u); dbPush("accounts", u); };
+      // Login session: who is signed in + when it expires (8 hours, or 30 days with "Keep me logged in")
+      const sessGet = () => { const s = ld("ap_session", null); if (!s || !s.e || s.exp < Date.now()) { if (s) sv("ap_session", null); return null; } return s; };
+      const sessSet = (email, keep) => sv("ap_session", { e: email, exp: Date.now() + (keep ? 30 * 864e5 : 8 * 36e5) });
+      const sessEnd = () => sv("ap_session", null);
+      const ME = () => { const s = sessGet(), u = s ? USERS()[s.e] || null : null; if (s && !u && DBS.ready) sessEnd(); return u; };
+      const BK = () => ld("ap_bk", []);
+      const saveBK = (b) => { sv("ap_bk", b); dbPush("bookings", Object.fromEntries(b.map((x) => [x.ref, x]))); };
+      async function dbPullAll() {
+        if (!DBS.db) return;
+        await DBS.q;
+        try {
+          const rd = async (col, idOf) => { const m = {}; (await DBS.db.collection(col).get()).docs.forEach((d) => { const r = d.data(); m[idOf(r)] = r; }); return m; };
+          const [a, b] = await Promise.all([rd("accounts", (r) => r.email), rd("bookings", (r) => r.ref)]);
+          const lu = USERS(), lb = BK();
+          if (!Object.keys(a).length && Object.keys(lu).length) saveUsers(lu); // first run: upload accounts made before the database
+          else { sv("ap_users", a); DBS.snap.accounts = Object.fromEntries(Object.entries(a).map(([k, v]) => [k, JSON.stringify(v)])); }
+          if (!Object.keys(b).length && lb.length) saveBK(lb);
+          else { const arr = Object.values(b).sort((x, y) => x.at - y.at); sv("ap_bk", arr); DBS.snap.bookings = Object.fromEntries(arr.map((x) => [x.ref, JSON.stringify(x)])); }
+          const c = await DBS.db.doc("settings/cfg").get();
+          if (c.exists) { Object.assign(CFG, c.data()); applyFares(); sv("ap_cfg", CFG); DBS.snap.settings = JSON.stringify((({ admin, ...p }) => p)(CFG)); }
+          else saveCfg();
+        } catch (e) {}
+      }
+      async function pullUser(em) { // always read the newest copy of one account before logging in / signing up
+        if (!DBS.db) return;
+        await DBS.q;
+        try {
+          const d = await DBS.db.doc("accounts/" + dkey(em)).get(), us = USERS();
+          if (d.exists) { us[em] = d.data(); DBS.snap.accounts[em] = JSON.stringify(d.data()); } else { delete us[em]; delete DBS.snap.accounts[em]; }
+          sv("ap_users", us);
+        } catch (e) {}
+      }
+      const DBREADY = (async () => {
+        try {
+          const c = window.claude && window.claude.use ? await window.claude.use("db") : null;
+          if (c) { DBS.db = c; await dbPullAll(); }
+        } catch (e) { DBS.db = null; }
+        DBS.ready = true;
+        try { if (!S.step && !S.view) render(); else hdrSync(); } catch (e) {}
+      })();
+
+      // ---- Miles & rewards ----
+      const tierName = (t) => (t.type == "flight" ? "1 free one-way Economy flight" : t.type == "voucher" ? peso(t.value) + " off your next booking" : "Free Wi-Fi pass (1 passenger, 1 flight)");
+      const tierIcon = (t) => (t.type == "flight" ? "✈️" : t.type == "voucher" ? "🎟️" : "📶");
+      const rewardsOf = (u) =>
+        CFG.tiers.filter((t) => t.on && t.miles > 0).map((t) => {
+          const got = Math.floor(u.miles / t.miles), used = (u.redeemed || {})[t.id] || 0;
+          return { t, left: Math.max(0, got - used), pct: ((u.miles % t.miles) / t.miles) * 100, toGo: t.miles - (u.miles % t.miles) };
+        });
+      const milesPreview = () => {
+        let n = 0;
+        for (let li = 0; li < LEGS(); li++) { const l = S.L[li]; if (l.flight && l.seats[0]) n += Math.round(dist(l.flight.from, l.flight.to) * MULT[clsOf(l.seats[0])]); }
+        return n;
+      };
+      const promoBanner = (nobtn) => {
+        const u = ME(), T = CFG.tiers.filter((t) => t.on && t.miles > 0);
+        if (!T.length) return "";
+        if (u) {
+          const R = rewardsOf(u), ready = R.reduce((a, r) => a + r.left, 0), nx = [...R].sort((a, b) => a.toGo - b.toGo)[0];
+          return `<div class="promo"><div style="font-size:34px">🎁</div><div style="flex:1;min-width:220px"><b>${xe(u.fn)}, you have ${u.miles.toLocaleString("en-PH")} miles${ready ? ` · ${ready} reward${ready > 1 ? "s" : ""} ready to use!` : ""}</b><div class="bar"><i style="width:${nx.pct}%"></i></div><div class="mute">${nx.toGo.toLocaleString("en-PH")} more miles to unlock: ${xe(tierName(nx.t))}</div></div>${nobtn ? "" : `<button class="btn alt" type="button" onclick="S.view='acct';render()">My rewards</button>`}</div>`;
+        }
+        return `<div class="promo"><div style="font-size:34px">🎁</div><div style="flex:1;min-width:220px"><b>Fly more, earn more: free flights with miles</b><div class="mute">Log in and every flight adds miles to your account.${T.map((t) => ` Reach ${t.miles.toLocaleString("en-PH")} miles for ${tierName(t)}.`).join("")}</div></div>${nobtn ? "" : `<button class="btn" type="button" onclick="S.view='acct';S.am='in';render()">Log in / Sign up</button>`}</div>`;
+      };
+
+      // ---- Food on board (step 3) ----
+      // Plain lists of what each cabin offers. "long" items only show on flights of 2 hours or more.
+      const FOOD = {
+        business: { all: ["Meal", "Beverages"], long: ["Chicken adobo", "Beef dish", "Rice meal"] },
+        comfort: { all: ["Premium snacks", "Complimentary drinks"], long: ["Bundled meals"] },
+        economy: { all: ["Water", "Snack packs"], long: ["Sandwiches", "Noodles", "Chips"] },
+      };
+      const durMin = (f) => (mins(f.arr) - mins(f.dep) + 1440) % 1440;
+      const foodCard = () => {
+        const d = durMin(S.flight), long = d >= 120, k = S.cab, c = CLS[k];
+        const items = [...FOOD[k].all, ...(long ? FOOD[k].long : [])];
+        return `<div class="card" style="margin-top:16px"><b>Food options · ${c.c} ${c.n}</b><div class="hint" style="margin:2px 0 8px">Flight time ${Math.floor(d / 60)}h ${d % 60}m</div><ul class="fl">${items.map((i) => `<li>${i}</li>`).join("")}</ul></div>`;
+      };
+
+      // ---- In-flight Wi-Fi ----
+      const wifiOn = (fid) => !CFG.noWifi.includes(fid);
+      const wifiPkg = (id) => CFG.wifi.find((p) => p.id == id);
+      const wifiSold = (fid, date, pid) => BK().reduce((n, b) => n + b.legs.reduce((m, l, li) => m + (l.fid == fid && l.date == date ? b.pax.filter((p) => p.wifi && p.wifi[li] == pid).length : 0), 0), 0);
+      const wifiLeft = (fid, date, p) => Math.max(0, p.cap - wifiSold(fid, date, p.id));
+      const wifiLines = () => {
+        const out = [];
+        for (let li = 0; li < LEGS(); li++) for (let i = 0; i < need(); i++) {
+          const f = S.L[li].flight, p = f && wifiPkg(S.wifi[li + ":" + i]);
+          if (p && wifiOn(f.id)) out.push({ leg: li, i, p, price: p.price });
+        }
+        return out;
+      };
+      const wifiCheck = () => {
+        const cnt = {};
+        for (const w of wifiLines()) {
+          const f = S.L[w.leg].flight, d = w.leg ? S.ret : S.date, k = f.id + "|" + d + "|" + w.p.id;
+          cnt[k] = (cnt[k] || 0) + 1;
+          if (!w.p.on) return w.p.name + " is no longer on sale. Please pick another package.";
+          if (cnt[k] > wifiLeft(f.id, d, w.p)) return `Only ${wifiLeft(f.id, d, w.p)} ${w.p.name} pass${wifiLeft(f.id, d, w.p) == 1 ? "" : "es"} left on ${f.id}. Please pick another package.`;
+        }
+        return "";
+      };
+      const wcode = (li, i) => "WF-" + (hash(S.ref + "a" + li + i) * 1000 + hash(S.ref + "b" + li + i)).toString(36).toUpperCase().padStart(4, "0");
+      const wifiCard = () => {
+        const T = TYPES(), legs = [...Array(LEGS()).keys()], pk = CFG.wifi.filter((p) => p.on);
+        let h = `<div class="card" id="wifi" style="margin-top:16px"><b style="font-size:19px">📶 In-flight Wi-Fi</b> <span class="tag">Optional</span><p class="mute" style="margin:4px 0 8px">Buy a Wi-Fi pass for any passenger and flight. Your activation code appears on the boarding pass. Prices are per passenger, per flight.</p>`;
+        if (!pk.length) return h + `<div class="note">No Wi-Fi packages are on sale right now.</div></div>`;
+        legs.forEach((li) => {
+          const f = S.L[li].flight, date = li ? S.ret : S.date;
+          h += `<div style="margin-top:14px"><b>${LEGS() > 1 ? legName(li) + " · " : ""}${f.air} ${f.id} · ${f.from} → ${f.to}</b>`;
+          if (!wifiOn(f.id)) h += `<div class="note">This aircraft has no Wi-Fi equipment, so Wi-Fi isn't available on this flight.</div>`;
+          else {
+            h += `<div class="tw"><table class="tbl"><thead><tr><th>Package</th><th>Speed</th><th>Price</th><th>Availability</th></tr></thead><tbody>${pk.map((p) => { const left = wifiLeft(f.id, date, p); return `<tr><td><b>${xe(p.name)}</b><div class="hint" style="margin:0">${xe(p.desc)}</div></td><td>${xe(p.speed)}</td><td><b>${peso(p.price)}</b></td><td><b style="color:${left > 5 ? "var(--ok)" : "var(--red)"}">${left ? left + " left" : "Sold out"}</b></td></tr>`; }).join("")}</tbody></table></div>`;
+            h += `<div class="grid" style="margin-top:10px">${T.map((t, i) => `<div><label for="wf${li}_${i}">Passenger ${i + 1} (${typeName(t)})</label><select id="wf${li}_${i}" data-wf="${li}:${i}"><option value="">No Wi-Fi</option>${pk.map((p) => { const left = wifiLeft(f.id, date, p), cur = S.wifi[li + ":" + i] == p.id; return `<option value="${p.id}" ${cur ? "selected" : ""} ${!left && !cur ? "disabled" : ""}>${xe(p.name)} · ${peso(p.price)}${left ? "" : " · Sold out"}</option>`; }).join("")}</select></div>`).join("")}</div>`;
+          }
+          h += `</div>`;
+        });
+        return h + `<div class="err" id="ewf"></div></div>`;
+      };
+
+      // ---- Baggage ----
+      // Each ticket includes a checked allowance and a hand-carry limit by cabin. Extra checked kg can be bought per passenger, per flight.
+      const fmtKg = (n) => String(+(+n).toFixed(1));
+      const bagOpts = () => CFG.bag.extras.filter((o) => o.on).sort((a, b) => a.kg - b.kg);
+      const bagKey = (li, i) => li + ":" + i;
+      const bagState = (li, i) => S.bag[bagKey(li, i)] || { x: 0, w: "", c: "" };
+      const bagAllow = (li, i) => { const seat = S.L[li].seats[i], k = seat ? clsOf(seat) : S.cab; return { k, seat, ...CFG.bag.allow[k] }; };
+      const bagExtra = (li, i) => { const x = +bagState(li, i).x || 0; return x ? bagOpts().find((o) => o.kg == x) || null : null; };
+      const bagSt = (li, i) => {
+        const a = bagAllow(li, i), st = bagState(li, i), o = bagExtra(li, i), O = bagOpts();
+        const w = Math.max(0, parseFloat(st.w) || 0), c = Math.max(0, parseFloat(st.c) || 0);
+        return { a, o, w, c, limit: a.chk + (o ? o.kg : 0), max: a.chk + (O.length ? O[O.length - 1].kg : 0) };
+      };
+      const bagLines = () => {
+        const out = [];
+        for (let li = 0; li < LEGS(); li++) for (let i = 0; i < need(); i++) { const o = S.L[li].flight && bagExtra(li, i); if (o) out.push({ leg: li, i, kg: o.kg, price: o.price }); }
+        return out;
+      };
+      const bagCheck = () => {
+        for (let li = 0; li < LEGS(); li++) for (let i = 0; i < need(); i++) {
+          const s = bagSt(li, i), who = `Passenger ${i + 1}${LEGS() > 1 ? " · " + legName(li) : ""}`;
+          if ((+bagState(li, i).x || 0) && !s.o) return `${who}: the extra baggage option you chose is no longer offered. Please choose again.`;
+        }
+        return "";
+      };
+      const bagCard = () => {
+        const T = TYPES(), O = bagOpts();
+        let h = `<div class="card" id="bag" style="margin-top:16px"><b style="font-size:19px">🧳 Baggage</b> <span class="tag">Optional</span><p class="mute" style="margin:4px 0 8px">Check in luggage and see what your ticket already includes. Extra baggage is priced per passenger, per flight.</p>`;
+        h += `<div class="tw"><table class="tbl"><thead><tr><th>Cabin</th><th>Checked baggage included</th><th>Hand-carry limit</th><th>Max checked (with extra)</th></tr></thead><tbody>${Object.entries(CLS).map(([k, c]) => `<tr><td><b>${c.c} ${c.n}</b></td><td>${CFG.bag.allow[k].chk} kg</td><td>${CFG.bag.allow[k].cab} kg</td><td>${CFG.bag.allow[k].chk + (O.length ? O[O.length - 1].kg : 0)} kg</td></tr>`).join("")}</tbody></table></div>`;
+        h += O.length ? `<div class="tw" style="margin-top:12px"><table class="tbl"><thead><tr><th>Extra checked baggage</th><th>Additional price</th></tr></thead><tbody>${O.map((o) => `<tr><td><b>+${o.kg} kg</b></td><td><b>${peso(o.price)}</b></td></tr>`).join("")}</tbody></table></div>` : `<div class="note">Extra baggage is not on sale right now.</div>`;
+        for (let li = 0; li < LEGS(); li++) {
+          const f = S.L[li].flight;
+          h += `<div style="margin-top:16px"><b>${LEGS() > 1 ? legName(li) + " · " : ""}${f.air} ${f.id} · ${f.from} → ${f.to}</b>`;
+          for (let i = 0; i < need(); i++) {
+            const a = bagAllow(li, i), st = bagState(li, i), x = +st.x || 0, mx = O.length ? O[O.length - 1].kg : 0;
+            h += `<div class="pcard" style="margin-top:10px"><div><b>Passenger ${i + 1}</b> <span class="mute">(${typeName(T[i])}) · ${CLS[a.k].n}${a.seat ? " · seat " + a.seat : ""}</span></div>
+ <div class="sum"><span>🧳 Checked baggage included</span><b>${a.chk} kg</b></div><div class="sum"><span>👜 Hand-carry / cabin baggage (maximum)</span><b>${a.cab} kg</b></div><div class="sum"><span>Maximum checked baggage${mx ? ` (${a.chk} kg + up to ${mx} kg extra)` : ""}</span><b>${a.chk + mx} kg</b></div>
+ ${O.length ? `<div style="margin-top:10px"><label>Add extra checked baggage</label><div class="seg wrap" role="group"><button type="button" class="segb ${x ? "" : "on"}" data-bx="${bagKey(li, i)}:0">No extra</button>${O.map((o) => `<button type="button" class="segb ${x == o.kg ? "on" : ""}" data-bx="${bagKey(li, i)}:${o.kg}">+${o.kg} kg · ${peso(o.price)}</button>`).join("")}</div></div>` : ""}
+ <div class="hint" style="margin:10px 0 0">⚠ Checked bags heavier than <b>${a.chk + (x || 0)} kg</b> and hand-carry heavier than <b>${a.cab} kg</b> will not be accepted at check-in. Add extra baggage above if you need more.</div></div>`;
+          }
+          h += `</div>`;
+        }
+        return h + `<div class="err" id="ebg"></div></div>`;
+      };
+      const bindBag = (onChange) => {
+        const box = $("#bag"); if (!box) return;
+        box.onclick = (e) => {
+          const b = e.target.closest("[data-bx]"); if (!b) return;
+          const [li, i, kg] = b.dataset.bx.split(":");
+          S.bag[li + ":" + i] = { ...bagState(+li, +i), x: +kg };
+          box.outerHTML = bagCard(); bindBag(onChange); onChange();
+        };
+      };
+      // short allowance summary for the seat page
+      const bagInfoCard = () => {
+        const k = S.cab, a = CFG.bag.allow[k], O = bagOpts();
+        return `<div class="card" style="margin-top:16px"><b>🧳 Baggage · ${CLS[k].c} ${CLS[k].n}</b><div class="sum" style="margin-top:8px"><span>Checked baggage included</span><b>${a.chk} kg</b></div><div class="sum"><span>Hand-carry (maximum)</span><b>${a.cab} kg</b></div>${O.length ? `<div class="mute" style="margin:8px 0 6px;font-size:14px">Extra checked baggage (added on the next pages)</div><ul class="fl">${O.map((o) => `<li>+${o.kg} kg · ${peso(o.price)}</li>`).join("")}</ul>` : ""}</div>`;
+      };
+
+      // ---- Totals (fares + Wi-Fi - reward) ----
+      const grand = () => {
+        const L = allLines(), W = wifiLines(), B = bagLines(), fare = L.reduce((a, l) => a + l.pay, 0), wifi = W.reduce((a, w) => a + w.price, 0), bag = B.reduce((a, b) => a + b.price, 0), u = ME();
+        let disc = 0, rl = "", rw = null;
+        if (S.step == 6 && S.pay && S.pay.disc != null) { disc = S.pay.disc; rl = S.pay.rl; }
+        else if (u && S.rw) {
+          rw = rewardsOf(u).find((r) => r.t.id == S.rw && r.left > 0) || null;
+          if (rw) {
+            if (rw.t.type == "voucher") disc = Math.min(rw.t.value, fare + wifi + bag);
+            else if (rw.t.type == "wifi") disc = W.length ? Math.min(...W.map((w) => w.price)) : 0;
+            else if (L.length) disc = Math.min(...L.map((l) => { const b = fareOf(S.L[l.leg].flight.id, "economy"); return Math.min(l.pay, l.d ? b - Math.round(b * DISC) : b); }));
+            rl = tierName(rw.t);
+          }
+        }
+        return { L, W, B, fare, wifi, bag, disc, rl, rw, total: fare + wifi + bag - disc };
+      };
+      const rewardBox = (G) => {
+        const u = ME();
+        if (!u) return `<div class="promo"><div style="font-size:32px">🎁</div><div style="flex:1;min-width:200px"><b>Booking as a guest: no miles earned</b><div class="mute">Log in to earn ${milesPreview().toLocaleString("en-PH")} miles on this trip and use your rewards.</div></div><button class="btn" id="rwlogin" type="button">Log in / Sign up</button></div>`;
+        const R = rewardsOf(u).filter((r) => r.left > 0);
+        return `<div class="card" style="margin-bottom:16px"><b style="font-size:19px">🎁 Miles &amp; rewards</b><p class="mute" style="margin:4px 0 10px">Passenger 1 earns <b>${milesPreview().toLocaleString("en-PH")} miles</b> on this booking. You have ${u.miles.toLocaleString("en-PH")} miles now.</p>${R.length ? `<label for="rw">Use a reward</label><select id="rw"><option value="">Don't use a reward</option>${R.map((r) => `<option value="${r.t.id}" ${G.rw && G.rw.t.id == r.t.id ? "selected" : ""}>${tierIcon(r.t)} ${xe(tierName(r.t))} (${r.left} available)</option>`).join("")}</select>${G.rw && !G.disc ? `<div class="err">This reward needs a Wi-Fi pass in your booking. Go back to Passenger info to add one.</div>` : ""}` : `<div class="hint">No rewards ready yet. Keep flying to unlock the next one.</div>`}</div>`;
+      };
+      const milesNote = () => {
+        const u = ME();
+        if (S.earned && u) return `<div class="promo" style="text-align:left"><div style="font-size:34px">✈️</div><div style="flex:1;min-width:220px"><b>+${S.earned.toLocaleString("en-PH")} miles added to your account</b><div class="mute">You now have ${u.miles.toLocaleString("en-PH")} miles.${S.rwUsed ? " Reward used: " + xe(S.rwUsed) + "." : ""}</div></div><button class="btn alt" type="button" onclick="S.view='acct';render()">View rewards</button></div>`;
+        if (!u) return `<div class="note" style="text-align:left">You booked as a guest, so no miles were added. <a href="#" onclick="S.view='acct';S.am='up';render();return false">Create an account</a> next time to earn miles toward free flights.</div>`;
+        return "";
+      };
+      const recordBooking = (G, total) => {
+        const u = ME(), T = TYPES();
+        const legs = [...Array(LEGS()).keys()].map((li) => ({ fid: S.L[li].flight.id, date: li ? S.ret : S.date, from: S.L[li].flight.from, to: S.L[li].flight.to }));
+        const pax = S.ps.map((q, i) => ({ name: q.name, type: T[i], seats: legs.map((_, li) => S.L[li].seats[i]), wifi: legs.map((_, li) => { const p = wifiPkg(S.wifi[li + ":" + i]); return p && wifiOn(S.L[li].flight.id) ? p.id : ""; }), bag: legs.map((_, li) => { const o = bagExtra(li, i), a = bagAllow(li, i); return { inc: a.chk, cab: a.cab, x: o ? o.kg : 0, price: o ? o.price : 0 }; }) }));
+        const earned = u ? milesPreview() : 0, used = G.rw && G.disc > 0 ? G.rw : null;
+        const b = { ref: S.ref, at: Date.now(), txn: S.pay.ref, user: u ? u.email : "", legs, pax, fare: G.fare, wifi: G.wifi, bagFee: G.bag, disc: G.disc, reward: used ? used.t.id : "", total, method: S.pay.m, mask: S.pay.mask, miles: earned };
+        const all = BK(); all.push(b); saveBK(all);
+        if (u) {
+          const us = USERS(), me = us[u.email];
+          me.miles += earned;
+          if (used) { me.redeemed = me.redeemed || {}; me.redeemed[used.t.id] = (me.redeemed[used.t.id] || 0) + 1; }
+          me.trips = me.trips || [];
+          me.trips.push({ ref: S.ref, at: b.at, route: legs.map((l) => l.from + " → " + l.to).join(", "), miles: earned });
+          saveUsers(us);
+        }
+        S.earned = earned; S.rwUsed = used ? tierName(used.t) : "";
+        S.pay.disc = G.disc > 0 && used ? G.disc : 0; S.pay.rl = used ? tierName(used.t) : "";
+      };
+
+      // ---- Header buttons & views ----
+      function hdrSync() {
+        const u = ME();
+        $("#outBtn").style.display = ME() ? "" : "none";
+        $("#acctBtn").innerHTML = S.view == "acct" ? "← Back" : u ? "👤 " + xe(u.fn) + " · " + u.miles.toLocaleString("en-PH") + " mi" : "👤 Log in";
+      }
+      const toggleView = (v) => {
+        if (!S.view && S.step == 4 && S.saveForm) { try { S.saveForm(); } catch (e) {} }
+        if (S.view == "admin") S.admIn = false;
+        if (S.view == "acct" && !ME()) S.step = 0; // leaving the login page without an account goes back home // leaving the admin area always signs staff out
+        S.view = S.view == v ? "" : v;
+        scrollTo(0, 0);
+        render();
+      };
+      $("#acctBtn").onclick = () => toggleView("acct");
+      // Log out: ends the session, releases any seats being held and wipes the unfinished booking, then returns home
+      function doLogout() {
+        try { Object.values(HOLD.mine).forEach((m) => HOLD.release(m.fid, m.date, m.seat)); } catch (e) {}
+        sessEnd();
+        S.admIn = false;
+        Object.assign(S, { wifi: {}, bag: {}, rw: "", earned: 0, rwUsed: "", fo: {}, to: "", ret: "", trip: "one", pax: { adult: 0, child: 0, infant: 0, senior: 0, pwd: 0 }, L: [{ flight: null, seats: [] }, { flight: null, seats: [] }], leg: 0, act: 0, ps: [], pwdOn: false, pay: null, pm: "", seats: [], last: null, am: "in" });
+        go(0);
+        flash("You have been logged out");
+      }
+      $("#outBtn").onclick = doLogout;
+      // Admin is hidden from passengers: Alt + S opens the staff sign-in (press again to close)
+      addEventListener("keydown", (e) => {
+        if (e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey && (e.code == "KeyS" || (e.key || "").toLowerCase() == "s")) { e.preventDefault(); toggleView("admin"); }
+      });
+
+      function vAcct() {
+        const u = ME(), back = `<button class="btn" type="button" id="aback">${S.step ? "Continue booking" : "Start booking"}</button>`;
+        const leave = () => { S.view = ""; if (!ME()) S.step = 0; else if (!S.step) S.step = 1; render(); };
+        if (!u) {
+          const up = S.am == "up";
+          app.innerHTML = `<h1>Passenger account</h1><p class="sub">Log in or create an account to book flights, earn miles and unlock free flights and rewards.</p>${promoBanner(true)}
+ <form class="card" id="aform" style="max-width:520px" novalidate><div class="seg" role="tablist"><button type="button" class="segb ${up ? "" : "on"}" data-am="in">Log in</button><button type="button" class="segb ${up ? "on" : ""}" data-am="up">Sign up</button></div>
+ <div style="display:grid;gap:14px;margin-top:16px">${up ? `<div class="grid"><div><label for="afn">First name</label><input id="afn" autocomplete="given-name"></div><div><label for="aln">Surname</label><input id="aln" autocomplete="family-name"></div></div>` : ""}
+ <div><label for="ae">Email</label><input id="ae" type="email" autocomplete="email" placeholder="you@email.com"></div>
+ <div><div class="pwrow"><label for="apw" style="margin:0">Password</label><span class="ck" style="margin:0"><input type="checkbox" id="apwt" style="width:auto"><label for="apwt" style="margin:0;font-weight:600">Show</label></span></div><input id="apw" type="password" style="margin-top:6px" autocomplete="${up ? "new-password" : "current-password"}">${up ? `<div class="hint" id="apws"></div>` : ""}</div>
+ ${up ? `<div><label for="apw2">Confirm password</label><input id="apw2" type="password" autocomplete="new-password"><div class="hint">At least 8 characters, with a letter and a number.</div></div>` : ""}</div>
+ ${up ? "" : `<div class="ck"><input type="checkbox" id="akeep" checked><label for="akeep" style="margin:0">Keep me logged in on this device</label></div>`}<div class="err" id="eac"></div><div class="hint" style="margin-top:10px">${DBS.db ? "Accounts are saved in the shared database, so you can log in again on any device." : "Accounts are saved in this browser only."} Passwords are salted and hashed, but still don't reuse a real one.</div>
+ <div class="row"><button class="btn alt" type="button" id="aback">Back to home</button><button class="btn" type="submit">${up ? "Create account" : "Log in"}</button></div></form>`;
+          app.querySelectorAll("[data-am]").forEach((b) => (b.onclick = () => { S.am = b.dataset.am; vAcct(); }));
+          $("#aback").onclick = leave;
+          const pe = $("#apw");
+          $("#apwt").onchange = (e) => { pe.type = e.target.checked ? "text" : "password"; const p2 = $("#apw2"); if (p2) p2.type = pe.type; };
+          if (up) pe.oninput = () => { $("#apws").textContent = pwStrength(pe.value); };
+          $("#aform").onsubmit = async (e) => {
+            e.preventDefault();
+            const er = (m) => { $("#eac").textContent = m; };
+            const btn = e.target.querySelector("button[type=submit]");
+            const em = $("#ae").value.trim().toLowerCase(), pw = $("#apw").value;
+            if (!/^\S+@\S+\.\S+$/.test(em)) return er("Enter a valid email like you@email.com.");
+            btn.disabled = true;
+            try {
+              await DBREADY; await pullUser(em);
+              if (!up) {
+                const w = lockLeft(em);
+                if (w) return er("Too many failed attempts. Try again in " + w + " seconds.");
+                if (!pw) return er("Enter your password.");
+                const x = USERS()[em];
+                if (!x || !(await checkPw(x, pw))) { failAdd(em); return er("Wrong email or password."); }
+                failClear(em);
+                const us = USERS(), me0 = us[em];
+                if (!me0) return er("Wrong email or password.");
+                if (!me0.h) { Object.assign(me0, await makePw(pw)); delete me0.pw; } // upgrade older accounts
+                me0.last = Date.now(); saveUsers(us);
+                sessSet(em, $("#akeep").checked);
+              } else {
+                const fn = $("#afn").value.trim(), ln = $("#aln").value.trim();
+                if (fn.length < 2) return er("Enter your first name.");
+                if (ln.length < 2) return er("Enter your surname.");
+                if (USERS()[em]) return er("An account with this email already exists. Log in instead.");
+                const pp = pwProblem(pw); if (pp) return er(pp);
+                if (pw != $("#apw2").value) return er("Passwords don't match.");
+                const rec = await makePw(pw), us = USERS();
+                if (us[em]) return er("An account with this email already exists. Log in instead.");
+                us[em] = { fn, ln, email: em, ...rec, miles: 0, trips: [], redeemed: {}, joined: Date.now(), last: Date.now() };
+                saveUsers(us);
+                sessSet(em, true);
+              }
+            } finally { btn.disabled = false; }
+            S.rw = "";
+            const me = ME();
+            if (S.ps[0]) { const p = S.ps[0]; if (!p.fn) p.fn = me.fn; if (!p.ln) p.ln = me.ln; if (!p.email) p.email = me.email; }
+            if (S.step) { S.view = ""; render(); flash((up ? "Welcome, " : "Welcome back, ") + me.fn + "! Miles will be added to this account."); }
+            else render();
+          };
+          return;
+        }
+        const R = rewardsOf(u), trips = u.trips || [];
+        const sec = `<div class="card" style="margin-top:16px"><b style="font-size:19px">Profile</b><div class="grid" style="margin-top:12px"><div><label for="pfn">First name</label><input id="pfn" value="${xe(u.fn)}" autocomplete="given-name"></div><div><label for="pln">Surname</label><input id="pln" value="${xe(u.ln)}" autocomplete="family-name"></div></div><div class="err" id="epf"></div><div class="row" style="justify-content:flex-start"><button class="btn" type="button" id="psave">Save profile</button></div></div>
+ <div class="card" style="margin-top:16px"><b style="font-size:19px">Change password</b><div style="display:grid;gap:12px;max-width:420px;margin-top:12px"><div><label for="pw0">Current password</label><input id="pw0" type="password" autocomplete="current-password"></div><div><label for="pw1">New password</label><input id="pw1" type="password" autocomplete="new-password"><div class="hint">At least 8 characters, with a letter and a number.</div></div><div><label for="pw2">Repeat new password</label><input id="pw2" type="password" autocomplete="new-password"></div></div><div class="err" id="epw"></div><div class="row" style="justify-content:flex-start"><button class="btn" type="button" id="pchg">Update password</button></div></div>
+ <div class="card" style="margin-top:16px"><b style="font-size:19px">Delete account</b><p class="mute" style="margin:4px 0 12px">Your miles and rewards are removed for good. Past bookings stay on record.</p><div style="max-width:420px"><label for="pdel">Enter your password to confirm</label><input id="pdel" type="password" autocomplete="current-password"></div><div class="err" id="edl"></div><div class="row" style="justify-content:flex-start"><button class="btn alt" type="button" id="pdelb">Delete my account</button></div></div>`;
+        app.innerHTML = `<h1>Hello, ${xe(u.fn)}</h1><p class="sub">${xe(u.email)} · Member since ${new Date(u.joined).toLocaleDateString("en-PH")}</p>
+ <div class="stats"><div class="card stat"><span class="mute">Miles flown</span><b>${u.miles.toLocaleString("en-PH")}</b></div><div class="card stat"><span class="mute">Trips booked</span><b>${trips.length}</b></div><div class="card stat"><span class="mute">Rewards ready</span><b>${R.reduce((a, r) => a + r.left, 0)}</b></div></div>
+ <div class="card"><b style="font-size:19px">🎁 Miles rewards</b><p class="mute" style="margin:4px 0 12px">Reach a goal to earn the reward. Goals repeat, so keep flying! You earn the route's miles for your own seat on each flight (Comfort ×1.25, Business ×1.5).</p>
+ ${R.length ? R.map((r) => `<div class="pcard"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><span><b>${tierIcon(r.t)} ${xe(tierName(r.t))}</b><div class="mute">Every ${r.t.miles.toLocaleString("en-PH")} miles</div></span>${r.left ? `<span class="tag pref">${r.left} ready to use</span>` : ""}</div><div class="bar"><i style="width:${r.pct}%"></i></div><div class="hint" style="margin:0">${(u.miles % r.t.miles).toLocaleString("en-PH")} / ${r.t.miles.toLocaleString("en-PH")} miles · ${r.toGo.toLocaleString("en-PH")} to go</div></div>`).join("") : `<div class="mute">No rewards are running right now.</div>`}
+ ${R.some((r) => r.left) ? `<div class="note">Choose your reward on the Payment page when you book.</div>` : ""}</div>
+ <div class="card" style="margin-top:16px"><b style="font-size:19px">Trip history</b>${trips.length ? `<div class="tw"><table class="tbl"><thead><tr><th>Booked</th><th>Reference</th><th>Route</th><th>Miles</th></tr></thead><tbody>${trips.slice().reverse().map((t) => `<tr><td>${new Date(t.at).toLocaleDateString("en-PH")}</td><td>${xe(t.ref)}</td><td>${xe(t.route)}</td><td>+${t.miles.toLocaleString("en-PH")}</td></tr>`).join("")}</tbody></table></div>` : `<p class="mute">No trips yet. Book a flight to start earning miles.</p>`}</div>
+ ${sec}
+ <div class="row"><button class="btn alt" type="button" id="alo">Log out</button>${back}</div>`;
+        $("#aback").onclick = leave;
+        $("#alo").onclick = doLogout;
+        $("#psave").onclick = () => {
+          const fn = $("#pfn").value.trim(), ln = $("#pln").value.trim(), er = (m) => { $("#epf").textContent = m; };
+          if (fn.length < 2) return er("Enter your first name.");
+          if (ln.length < 2) return er("Enter your surname.");
+          const us = USERS(); if (!us[u.email]) return;
+          us[u.email].fn = fn; us[u.email].ln = ln; saveUsers(us); flash("Profile saved"); render();
+        };
+        $("#pchg").onclick = async () => {
+          const er = (m) => { $("#epw").textContent = m; }, p0 = $("#pw0").value, p1 = $("#pw1").value;
+          if (!(await checkPw(u, p0))) return er("Current password is wrong.");
+          const pp = pwProblem(p1); if (pp) return er(pp);
+          if (p1 == p0) return er("Choose a different password from the current one.");
+          if (p1 != $("#pw2").value) return er("New passwords don't match.");
+          const rec = await makePw(p1), us = USERS(); if (!us[u.email]) return;
+          Object.assign(us[u.email], rec); delete us[u.email].pw; saveUsers(us);
+          ["pw0", "pw1", "pw2"].forEach((k) => ($("#" + k).value = "")); er(""); flash("Password updated");
+        };
+        $("#pdelb").onclick = async () => {
+          const er = (m) => { $("#edl").textContent = m; };
+          if (!(await checkPw(u, $("#pdel").value))) return er("Password is wrong.");
+          if (!confirm("Delete your account for good? Your miles and rewards will be lost.")) return;
+          const us = USERS(); delete us[u.email]; saveUsers(us); sessEnd(); S.rw = ""; render(); flash("Account deleted");
+        };
+      }
+
+      // ---- Admin console ----
+      const T_ = (heads, rows) => `<div class="tw"><table class="tbl"><thead><tr>${heads.map((h) => `<th>${h}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div>`;
+      const stat = (l, v) => `<div class="card stat"><span class="mute">${l}</span><b>${v}</b></div>`;
+      const ATABS = [["overview", "📊 Overview"], ["bookings", "🎫 Bookings"], ["passengers", "👥 Passengers"], ["flights", "✈ Flights & fares"], ["wifi", "📶 Wi-Fi"], ["rewards", "🎁 Miles & rewards"], ["baggage", "🧳 Baggage"], ["settings", "⚙ Settings"]];
+      const bkRow = (b) => {
+        const names = b.pax.map((p) => xe(p.name)).join(", "), w = b.pax.reduce((n, p) => n + p.wifi.filter(Boolean).length, 0);
+        return `<tr data-q="${xe((b.ref + " " + b.pax.map((p) => p.name).join(" ") + " " + b.user).toLowerCase())}"><td><b>${xe(b.ref)}</b></td><td>${new Date(b.at).toLocaleString("en-PH")}</td><td>${b.user ? xe(b.user) : '<span class="mute">Guest</span>'}</td><td>${names}</td><td>${b.legs.map((l) => `${xe(l.fid)} ${l.from}→${l.to} ${l.date}`).join("<br>")}</td><td>${w || "-"}</td><td><b>${peso(b.total)}</b><div class="hint" style="margin:0">${xe(b.method)}</div></td><td><button class="btn alt" style="padding:6px 12px" data-act="cancel|${xe(b.ref)}">Cancel</button></td></tr>`;
+      };
+      const bkCard = (b) => {
+        const lbl = (t) => `<div class="mute" style="font-size:13px;margin:12px 0 4px">${t}</div>`;
+        const legs = b.legs.map((l) => `<div class="sum"><span><b>${xe(l.fid)}</b> · ${xe(l.from)} → ${xe(l.to)}</span><span class="mute">${xe(l.date)}</span></div>`).join("");
+        const pax = b.pax.map((p, i) => `<div class="sum"><span><b>${xe(p.name)}</b> <span class="mute">${xe(p.type)}</span></span><span>${b.legs.map((l, li) => { const sc = p.seats[li], c = sc && CLS[clsOf(sc)]; return xe(sc || "-") + (c ? " · " + c.n : "") + (p.wifi && p.wifi[li] ? " · 📶" : ""); }).join(" | ")}</span></div>${(p.bag || []).some((g) => g.x) ? `<div class="hint" style="margin:0 0 8px">🧳 ${p.bag.map((g, li) => `${b.legs.length > 1 ? (li ? "Return" : "Outbound") + ": " : ""}checked ${g.inc + g.x} kg (${g.inc} included${g.x ? " + " + g.x + " extra · " + peso(g.price) : ""})`).join(" | ")}</div>` : ""}`).join("");
+        return `<div data-q="${xe((b.ref + " " + (b.txn || "") + " " + b.pax.map((p) => p.name).join(" ") + " " + b.user + " " + b.legs.map((l) => l.fid + " " + l.from + " " + l.to + " " + (CITY[l.from] || "") + " " + (CITY[l.to] || "") + " " + l.date).join(" ")).toLowerCase())}" style="border:2px solid var(--line);border-radius:12px;padding:14px;margin-top:12px">
+ <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start"><div><div class="mute" style="font-size:13px">Booking ID</div><b style="font-size:21px">${xe(b.ref)}</b><div class="mute" style="margin-top:4px">Ticket number: <b style="color:var(--ink)">${xe(b.txn || "-")}</b></div></div><div style="text-align:right"><span class="tag">Paid ✓</span><div class="mute" style="margin-top:4px">${new Date(b.at).toLocaleString("en-PH")}</div></div></div>
+ ${lbl("Account")}<div>${b.user ? xe(b.user) : '<span class="mute">Guest</span>'}</div>
+ ${lbl("Flights")}${legs}${lbl("Passengers and seats")}${pax}
+ ${lbl("Payment")}<div class="sum"><span class="mute">${xe(b.method)}${b.mask ? " · " + xe(b.mask) : ""}</span><b>${peso(b.total)}</b></div>
+ <div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn alt" type="button" data-act="cancel|${xe(b.ref)}">Cancel booking</button></div></div>`;
+      };
+      const ADM = {
+        overview() {
+          const B = BK(), U = Object.values(USERS()), live = HOLD.liveList();
+          return `<div class="stats">${stat("Bookings", B.length)}${stat("Revenue", peso(B.reduce((a, b) => a + b.total, 0)))}${stat("Passengers booked", B.reduce((a, b) => a + b.pax.length, 0))}${stat("Wi-Fi sales", peso(B.reduce((a, b) => a + b.wifi, 0)))}${stat("Baggage sales", peso(B.reduce((a, b) => a + (b.bagFee || 0), 0)))}${stat("Registered accounts", U.length)}${stat("Miles flown (all)", U.reduce((a, u) => a + u.miles, 0).toLocaleString("en-PH"))}${stat("Seats held now", live.filter((e) => e.st == "held").length)}${stat("Seats booked", live.filter((e) => e.st == "booked").length)}</div>
+ <div class="card"><b style="font-size:19px">Latest bookings</b>${B.length ? `<div>${B.slice(-5).reverse().map(bkCard).join("")}</div>` : `<p class="mute">No bookings yet.</p>`}</div>
+ <div class="note">${DBS.db ? "Accounts, bookings and fares are saved in the shared database." : "Bookings, passengers and settings are stored in this browser only."} Seat holds use the shared live database when it is available (${HOLD.mode == "db" ? "connected" : "not connected"}).</div>`;
+        },
+        bookings() {
+          const B = BK().slice().reverse();
+          return `<div class="card"><b style="font-size:19px">Bookings (${B.length})</b><input id="bq" data-search value="${xe(S.bqv || "")}" placeholder="Search flight number, booking ID, ticket number, passenger, route or date" style="margin-top:10px" aria-label="Search bookings">${B.length ? `<div id="bklist">${B.map(bkCard).join("")}</div>` : `<p class="mute">No bookings yet.</p>`}</div>`;
+        },
+        passengers() {
+          const U = Object.values(USERS());
+          return `<div class="card"><b style="font-size:19px">Passenger accounts (${U.length})</b><input data-search placeholder="Search passenger name or email" style="margin-top:10px" aria-label="Search passengers">${U.length ? T_(["Name", "Email", "Miles", "Trips", "Rewards ready", "Joined", "Actions"], U.map((u) => `<tr data-q="${xe((u.fn + " " + u.ln + " " + u.email).toLowerCase())}"><td><b>${xe(u.fn + " " + u.ln)}</b></td><td>${xe(u.email)}</td><td>${u.miles.toLocaleString("en-PH")}</td><td>${(u.trips || []).length}</td><td>${rewardsOf(u).reduce((a, r) => a + r.left, 0)}</td><td>${new Date(u.joined).toLocaleDateString("en-PH")}</td><td style="white-space:nowrap"><button class="btn alt" style="padding:6px 10px" data-act="miles|${xe(u.email)}">Set miles</button> <button class="btn alt" style="padding:6px 10px" data-act="pw|${xe(u.email)}">Reset password</button> <button class="btn alt" style="padding:6px 10px" data-act="delu|${xe(u.email)}">Delete</button></td></tr>`).join("")) : `<p class="mute">No one has signed up yet.</p>`}</div>`;
+        },
+        flights() {
+          return `<div class="card"><b style="font-size:19px">Flights &amp; fares</b><p class="mute" style="margin:4px 0 0">Fares are per passenger in PHP and only affect new bookings. Untick "On sale" to hide a flight from search. Untick "Wi-Fi" if the aircraft has no Wi-Fi equipment.</p><input data-search placeholder="Search flight number, airline or route" style="margin-top:10px" aria-label="Search flights">${T_(["Flight", "Route", "Economy ₱", "Comfort ₱", "Business ₱", "Wi-Fi", "On sale", "Bookings"], FL.map((f) => `<tr data-q="${xe((f.id + " " + f.air + " " + f.from + " " + f.to + " " + CITY[f.from] + " " + CITY[f.to]).toLowerCase())}"><td><b>${f.id}</b><div class="hint" style="margin:0">${f.air}</div></td><td>${f.from} → ${f.to}<div class="hint" style="margin:0">${f.dep} - ${f.arr}</div></td>${["economy", "comfort", "business"].map((c) => `<td><input type="number" min="1" step="50" value="${FARE[f.id][c]}" data-set="fare|${f.id}|${c}" aria-label="${f.id} ${c} fare"></td>`).join("")}<td><input type="checkbox" ${wifiOn(f.id) ? "checked" : ""} data-set="equip|${f.id}" aria-label="${f.id} has Wi-Fi"></td><td><input type="checkbox" ${CFG.off.includes(f.id) ? "" : "checked"} data-set="sale|${f.id}" aria-label="${f.id} on sale"></td><td>${(() => { const n = BK().filter((b) => b.legs.some((l) => l.fid == f.id)).length; return `<button class="btn alt" style="padding:6px 10px;white-space:nowrap" data-act="fbk|${f.id}">${n} booking${n == 1 ? "" : "s"} →</button>`; })()}</td></tr>`).join(""))}</div>`;
+        },
+        wifi() {
+          const B = BK();
+          return `<div class="card"><b style="font-size:19px">In-flight Wi-Fi packages</b><p class="mute" style="margin:4px 0 0">"Passes per flight" is how many can be sold on each flight and date. Only packages that are on sale show to passengers.</p>${T_(["Name", "Description", "Speed", "Price ₱", "Passes per flight", "Sold", "On sale", ""], CFG.wifi.map((p, i) => `<tr><td><input value="${xe(p.name)}" data-set="wifi|${i}|name" aria-label="Name"></td><td><input value="${xe(p.desc)}" data-set="wifi|${i}|desc" aria-label="Description"></td><td><input value="${xe(p.speed)}" data-set="wifi|${i}|speed" aria-label="Speed"></td><td><input type="number" min="1" value="${p.price}" data-set="wifi|${i}|price" aria-label="Price"></td><td><input type="number" min="0" value="${p.cap}" data-set="wifi|${i}|cap" aria-label="Passes per flight"></td><td>${B.reduce((n, b) => n + b.pax.reduce((m, x) => m + x.wifi.filter((w) => w == p.id).length, 0), 0)}</td><td><input type="checkbox" ${p.on ? "checked" : ""} data-set="wifi|${i}|on" aria-label="On sale"></td><td><button class="btn alt" style="padding:6px 10px" data-act="delw|${i}">Delete</button></td></tr>`).join(""))}<div class="row" style="justify-content:flex-start"><button class="btn" data-act="addw">+ Add package</button></div></div>`;
+        },
+        rewards() {
+          return `<div class="card"><b style="font-size:19px">Miles &amp; rewards</b><p class="mute" style="margin:4px 0 0">Each reward is earned every time a passenger's total miles passes a multiple of its goal (for example, every 5,000 miles). Miles per flight = route distance, ×1.25 Comfort, ×1.5 Business.</p>${T_(["Goal (miles)", "Reward", "Voucher value ₱", "Active", ""], CFG.tiers.map((t, i) => `<tr><td><input type="number" min="1" value="${t.miles}" data-set="tier|${i}|miles" aria-label="Goal miles"></td><td><select data-set="tier|${i}|type" aria-label="Reward type"><option value="flight" ${t.type == "flight" ? "selected" : ""}>Free one-way Economy flight</option><option value="voucher" ${t.type == "voucher" ? "selected" : ""}>Booking voucher</option><option value="wifi" ${t.type == "wifi" ? "selected" : ""}>Free Wi-Fi pass</option></select></td><td><input type="number" min="1" value="${t.value || ""}" ${t.type == "voucher" ? "" : "disabled"} data-set="tier|${i}|value" aria-label="Voucher value"></td><td><input type="checkbox" ${t.on ? "checked" : ""} data-set="tier|${i}|on" aria-label="Active"></td><td><button class="btn alt" style="padding:6px 10px" data-act="delt|${i}">Delete</button></td></tr>`).join(""))}<div class="row" style="justify-content:flex-start"><button class="btn" data-act="addt">+ Add reward</button></div></div>`;
+        },
+        baggage() {
+          const B = CFG.bag, sold = (kg) => BK().reduce((n, b) => n + b.pax.reduce((m, p) => m + (p.bag || []).filter((g) => g.x == kg).length, 0), 0);
+          return `<div class="card"><b style="font-size:19px">Baggage allowance</b><p class="mute" style="margin:4px 0 0">Included with every ticket, per passenger and flight, by cabin. Hand-carry is the cabin bag limit and cannot be extended by passengers. Changes only affect new bookings.</p>${T_(["Cabin", "Checked baggage included (kg)", "Hand-carry limit (kg)"], Object.entries(CLS).map(([k, c]) => `<tr><td><b>${c.c} ${c.n}</b></td><td><input type="number" min="0" value="${B.allow[k].chk}" data-set="bagallow|${k}|chk" aria-label="${c.n} checked kg"></td><td><input type="number" min="0" value="${B.allow[k].cab}" data-set="bagallow|${k}|cab" aria-label="${c.n} hand-carry kg"></td></tr>`).join(""))}</div>
+ <div class="card" style="margin-top:16px"><b style="font-size:19px">Extra baggage options</b><p class="mute" style="margin:4px 0 0">Extra checked kilos passengers can add, with the additional price per passenger per flight. Only options that are on sale are shown. The largest one sets the maximum checked weight.</p>${T_(["Extra (kg)", "Price ₱", "Sold", "On sale", ""], B.extras.map((o, i) => `<tr><td><input type="number" min="1" value="${o.kg}" data-set="bagx|${i}|kg" aria-label="Extra kg"></td><td><input type="number" min="1" value="${o.price}" data-set="bagx|${i}|price" aria-label="Price"></td><td>${sold(o.kg)}</td><td><input type="checkbox" ${o.on ? "checked" : ""} data-set="bagx|${i}|on" aria-label="On sale"></td><td><button class="btn alt" style="padding:6px 10px" data-act="delb|${i}">Delete</button></td></tr>`).join(""))}<div class="row" style="justify-content:flex-start"><button class="btn" data-act="addb">+ Add option</button></div></div>`;
+        },
+        settings() {
+          return `${CFG.admin.def || CFG.admin.pw == pwHash("admin123") ? `<div class="note">⚠ The admin password is still the default (admin123). Change it below.</div>` : ""}<div class="card"><b style="font-size:19px">Admin login</b><div style="display:grid;gap:12px;max-width:420px;margin-top:12px"><div><label for="cu">Username</label><input id="cu" value="${xe(CFG.admin.user)}" autocomplete="off"></div><div><label for="cp0">Current password</label><input id="cp0" type="password" autocomplete="current-password"></div><div><label for="cp1">New password (8+ characters, letter and number)</label><input id="cp1" type="password" autocomplete="new-password"></div><div><label for="cp2">Repeat new password</label><input id="cp2" type="password" autocomplete="new-password"></div></div><div class="err" id="ecr"></div><div class="row" style="justify-content:flex-start"><button class="btn" data-act="creds">Save login</button></div></div>
+ <div class="card" style="margin-top:16px"><b style="font-size:19px">Demo data</b><p class="mute" style="margin:4px 0 12px">Clear the live seat map, delete all demo bookings and accounts, or put fares, Wi-Fi and rewards back to their starting values.</p><div class="row" style="justify-content:flex-start;margin-top:0"><button class="btn alt" data-act="seats">Reset live seats</button><button class="btn alt" data-act="defaults">Restore default settings</button><button class="btn alt" data-act="cleardata">Delete all bookings &amp; accounts</button></div></div>`;
+        },
+      };
+      const ACT = {
+        fbk([fid]) { S.bqv = fid; S.at = "bookings"; vAdmin(); }, // jump to the bookings of one flight
+        cancel([ref]) {
+          const b0 = BK().find((x) => x.ref == ref);
+          if (!b0) return;
+          const ov = document.createElement("div");
+          ov.className = "ovl";
+          ov.innerHTML = `<div class="card dlg" role="dialog" aria-modal="true" aria-labelledby="cxT"><h1 id="cxT" style="font-size:24px">Cancel this booking?</h1><p class="sub">Its seats are released on the seat map and the miles it earned are removed. This cannot be undone. Type the booking ID${b0.txn ? " and the ticket number" : ""} from the record to confirm.</p><div style="display:grid;gap:12px"><div><label for="cxid">Booking ID</label><input id="cxid" autocomplete="off" spellcheck="false"></div>${b0.txn ? `<div><label for="cxtk">Ticket number</label><input id="cxtk" autocomplete="off" spellcheck="false"></div>` : ""}</div><div class="err" id="cxe"></div><div class="row"><button class="btn alt" id="cx-no" type="button">Keep booking</button><button class="btn" id="cx-yes" type="button" disabled>Cancel booking</button></div></div>`;
+          document.body.appendChild(ov);
+          const esc = (e) => e.key == "Escape" && close();
+          const close = () => { ov.remove(); document.removeEventListener("keydown", esc); };
+          document.addEventListener("keydown", esc);
+          const same = (a, b) => a.trim().toUpperCase() == String(b).toUpperCase();
+          const ok = () => same($("#cxid").value, b0.ref) && (!b0.txn || same($("#cxtk").value, b0.txn));
+          const sync = () => { $("#cx-yes").disabled = !ok(); $("#cxe").textContent = ""; };
+          $("#cxid").oninput = sync; if (b0.txn) $("#cxtk").oninput = sync;
+          $("#cx-no").onclick = close;
+          $("#cx-yes").onclick = async () => {
+            if (!ok()) return ($("#cxe").textContent = "The booking ID or ticket number does not match this record.");
+            $("#cx-yes").disabled = true;
+            await dbPullAll();
+            const all = BK(), b = all.find((x) => x.ref == ref);
+            if (!b) { close(); flash("That booking no longer exists"); return vAdmin(); }
+            let freed = 0; const stuck = [];
+            for (const [li, l] of b.legs.entries()) for (const p of b.pax) { const seat = p.seats[li]; if (!seat) continue; if (await HOLD.free(l.fid, l.date, seat)) freed++; else stuck.push(l.fid + " " + seat); }
+            if (stuck.length) { close(); flash("Could not release seat " + stuck.join(", ") + ". Booking not cancelled, try again."); return vAdmin(); }
+            saveBK(all.filter((x) => x !== b));
+            if (b.user) {
+              const us = USERS(), m = us[b.user];
+              if (m) { m.miles = Math.max(0, m.miles - (b.miles || 0)); m.trips = (m.trips || []).filter((t) => t.ref != b.ref); if (b.reward && m.redeemed && m.redeemed[b.reward]) m.redeemed[b.reward]--; saveUsers(us); }
+            }
+            close(); flash("Booking " + ref + " cancelled · " + freed + " seat" + (freed == 1 ? "" : "s") + " released on the seat map"); vAdmin();
+          };
+          $("#cxid").focus();
+        },
+        miles([em]) {
+          const us = USERS(), u = us[em]; if (!u) return;
+          const v = prompt("Set total miles for " + u.fn + " " + u.ln + ":", u.miles);
+          if (v === null) return;
+          const n = Math.round(+v);
+          if (!(n >= 0) || v.trim() === "") return flash("Enter a number, 0 or higher.");
+          u.miles = n; saveUsers(us); vAdmin();
+        },
+        async pw([em]) {
+          const us = USERS(), u = us[em]; if (!u) return;
+          const v = prompt("New password for " + u.email + " (at least 8 characters, with a letter and a number):");
+          if (v === null) return;
+          const pp = pwProblem(v); if (pp) return flash(pp);
+          Object.assign(u, await makePw(v)); delete u.pw; saveUsers(us); failClear(em); flash("Password updated");
+        },
+        delu([em]) {
+          if (!confirm("Delete the account " + em + "? Their miles and rewards will be lost. Past bookings stay in the list.")) return;
+          const us = USERS(); delete us[em]; saveUsers(us);
+          const ss = sessGet(); if (ss && ss.e == em) sessEnd();
+          vAdmin();
+        },
+        addw() { CFG.wifi.push({ id: "p" + Date.now().toString(36), name: "New package", price: 199, cap: 30, on: false, desc: "Describe this package", speed: "Up to 5 Mbps" }); saveCfg(); vAdmin(); },
+        delw([i]) { if (!confirm("Delete this Wi-Fi package? Past bookings keep their record.")) return; CFG.wifi.splice(+i, 1); saveCfg(); vAdmin(); },
+        addb() { CFG.bag.extras.push({ kg: 15, price: 900, on: false }); saveCfg(); vAdmin(); },
+        delb([i]) { if (!confirm("Delete this extra baggage option? Past bookings keep their record.")) return; CFG.bag.extras.splice(+i, 1); saveCfg(); vAdmin(); },
+        addt() { CFG.tiers.push({ id: "t" + Date.now().toString(36), miles: 3000, type: "voucher", value: 500, on: false }); saveCfg(); vAdmin(); },
+        delt([i]) { if (!confirm("Delete this reward?")) return; CFG.tiers.splice(+i, 1); saveCfg(); vAdmin(); },
+        async seats() { if (!confirm("Clear ALL live seat holds and bookings for everyone using this demo?")) return; await HOLD.reset(); flash("Live seats cleared"); vAdmin(); },
+        cleardata() {
+          if (!confirm("Delete ALL bookings and passenger accounts in this browser?")) return;
+          saveBK([]); saveUsers({}); sessEnd(); S.rw = ""; flash("Bookings and accounts deleted"); vAdmin();
+        },
+        defaults() {
+          if (!confirm("Restore fares, Wi-Fi packages, rewards and flight settings to the defaults?")) return;
+          const d = DEF(); Object.assign(CFG, { fares: {}, off: [], noWifi: d.noWifi, wifi: d.wifi, bag: d.bag, tiers: d.tiers }); applyFares(); saveCfg(); flash("Defaults restored"); vAdmin();
+        },
+        async creds() {
+          const er = (m) => { $("#ecr").textContent = m; };
+          const u = $("#cu").value.trim(), p0 = $("#cp0").value, p1 = $("#cp1").value;
+          if (!(await checkPw(CFG.admin, p0))) return er("Current password is wrong.");
+          if (u.length < 3) return er("Username must be at least 3 characters.");
+          if (p1) { const pp = pwProblem(p1); if (pp) return er(pp); }
+          if (p1 != $("#cp2").value) return er("New passwords don't match.");
+          CFG.admin = p1 ? { user: u, ...(await makePw(p1)) } : { ...CFG.admin, user: u }; saveCfg(); er(""); ["cp0", "cp1", "cp2"].forEach((k) => ($("#" + k).value = "")); flash("Admin login saved");
+        },
+      };
+      const SET = (el) => {
+        const [kind, a, b] = el.dataset.set.split("|"), num = (min) => { const n = Math.round(+el.value); return el.value.trim() !== "" && n >= min ? n : null; };
+        const bad = (old) => { el.value = old; flash("Please enter a valid number."); };
+        if (kind == "fare") { const n = num(1); if (n == null) return bad(FARE[a][b]); FARE[a][b] = n; CFG.fares[a] = { ...(CFG.fares[a] || {}), [b]: n }; }
+        else if (kind == "equip") { CFG.noWifi = CFG.noWifi.filter((x) => x != a); if (!el.checked) CFG.noWifi.push(a); }
+        else if (kind == "sale") { CFG.off = CFG.off.filter((x) => x != a); if (!el.checked) CFG.off.push(a); }
+        else if (kind == "wifi") {
+          const p = CFG.wifi[+a]; if (!p) return;
+          if (b == "on") p.on = el.checked;
+          else if (b == "price" || b == "cap") { const n = num(b == "price" ? 1 : 0); if (n == null) return bad(p[b]); p[b] = n; }
+          else { if (b == "name" && !el.value.trim()) return bad(p.name); p[b] = el.value.trim(); }
+        } else if (kind == "bagallow") {
+          const n = num(0); if (n == null) return bad(CFG.bag.allow[a][b]); CFG.bag.allow[a][b] = n;
+        } else if (kind == "bagx") {
+          const o = CFG.bag.extras[+a]; if (!o) return;
+          if (b == "on") o.on = el.checked; else { const n = num(1); if (n == null) return bad(o[b]); o[b] = n; }
+        } else if (kind == "tier") {
+          const t = CFG.tiers[+a]; if (!t) return;
+          if (b == "on") t.on = el.checked;
+          else if (b == "type") { t.type = el.value; if (t.type == "voucher" && !t.value) t.value = 500; saveCfg(); return vAdmin(); }
+          else { const n = num(1); if (n == null) return bad(t[b]); t[b] = n; }
+        }
+        saveCfg(); flash("Saved");
+      };
+      function admBind() {
+        const box = $("#atab"); if (!box) return;
+        box.onclick = async (e) => { const b = e.target.closest("[data-act]"); if (!b) return; const [act, ...a] = b.dataset.act.split("|"); await ACT[act](a); };
+        box.onchange = (e) => { const el = e.target.closest("[data-set]"); if (el) SET(el); };
+        box.querySelectorAll("input[data-search]").forEach((q) => {
+          const none = document.createElement("div");
+          none.className = "mute"; none.style.cssText = "display:none;margin-top:12px"; none.textContent = "No matches found.";
+          q.after(none);
+          const run = () => {
+            const t = q.value.trim().toLowerCase().split(/\s+/).filter(Boolean); let shown = 0;
+            box.querySelectorAll("[data-q]").forEach((r) => { const ok = t.every((w) => r.dataset.q.includes(w)); r.style.display = ok ? "" : "none"; if (ok) shown++; });
+            none.style.display = shown ? "none" : "";
+          };
+          q.oninput = run;
+          if (q.value) run();
+        });
+      }
+      function vAdmin() {
+        if (!S.admIn) {
+          app.innerHTML = `<h1>Admin sign in</h1><p class="sub">For airline staff only.</p><form class="card" id="alf" style="max-width:440px" autocomplete="off"><div style="display:grid;gap:14px"><div><label for="au">Username</label><input id="au" autocomplete="username"></div><div><label for="ap">Password</label><input id="ap" type="password" autocomplete="current-password"></div></div><div class="err" id="eal"></div><div class="row"><button class="btn alt" type="button" id="acancel">Cancel</button><button class="btn" type="submit">Sign in</button></div></form>`;
+          $("#acancel").onclick = () => toggleView("admin");
+          $("#alf").onsubmit = async (e) => {
+            e.preventDefault();
+            const er = (m) => { $("#eal").textContent = m; };
+            const w = lockLeft("admin"); if (w) return er("Too many attempts. Wait " + w + " seconds.");
+            const u = $("#au").value.trim(), p = $("#ap").value;
+            if (!(u == CFG.admin.user && (await checkPw(CFG.admin, p)))) { failAdd("admin"); return er("Wrong username or password."); }
+            failClear("admin");
+            if (!CFG.admin.h) { CFG.admin = { user: CFG.admin.user, ...(await makePw(p)), def: p == "admin123" }; saveCfg(); } // upgrade old hash
+            await dbPullAll(); S.admIn = true; render();
+          };
+          return;
+        }
+        const t = S.at;
+        app.innerHTML = `<h1>Admin console</h1><p class="sub">Bookings, passengers, flights, Wi-Fi and miles rewards. Changes save instantly.</p><div class="seg wrap" role="tablist">${ATABS.map(([k, n]) => `<button type="button" class="segb ${t == k ? "on" : ""}" data-at="${k}">${n}</button>`).join("")}</div><div id="atab" style="margin-top:18px">${ADM[t]()}</div><div class="row" style="justify-content:space-between;align-items:center"><span class="hint">Signed in as ${xe(CFG.admin.user)}</span><button class="btn alt" type="button" id="aout">Sign out</button></div>`;
+        app.querySelectorAll("[data-at]").forEach((b) => (b.onclick = async () => { await dbPullAll(); S.bqv = ""; S.at = b.dataset.at; vAdmin(); }));
+        $("#aout").onclick = () => { S.admIn = false; S.view = ""; render(); };
+        admBind();
+      }
+
+      const takenF = (fid, id) => (!PWD.includes(id) && hash(fid + id) % 100 < 30) || HOLD.isTaken(fid, curDate(), id);
+      const taken = (id) => takenF(S.flight.id, id);
+      const clsOf = (id) => {
+        const r = parseInt(id);
+        return Object.keys(CLS).find((k) => CLS[k].rows.includes(r));
+      };
+      const opts = (o) =>
+        Object.entries(o)
+          .map(([k, v]) => `<option value="${k}">${v} (${k})</option>`)
+          .join("");
+      const NAMES = [
+        "Flight search",
+        "Select flight",
+        "Select seat",
+        "Passenger info",
+        "Payment",
+        "Confirmation",
+      ];
+      const PAX = [
+        ["adult", "Adult", "12+ years"],
+        ["child", "Child", "2-11 years"],
+        ["infant", "Infant", "Under 2 years"],
+        ["senior", "Senior", "60+ years"],
+        ["pwd", "PWD", "Person/s with disability"],
+      ];
+      const guard = (x) => x.adult + x.senior + x.pwd; // 12+ passengers who can accompany an infant
+      const paxTotal = (x) => Object.values(x).reduce((a, b) => a + b, 0);
+      const paxLabel = (x) => {
+        const t = paxTotal(x);
+        return t ? `${t} Passenger${t > 1 ? "s" : ""}` : "Add passengers";
+      };
+      const paxDetail = (x) =>
+        PAX.filter(([k]) => x[k])
+          .map(([k, n]) => `${x[k]} ${n}`)
+          .join(", ");
+      function go(n) {
+        S.view = "";
+        S.step = n;
+        scrollTo(0, 0);
+        render();
+      }
+      function render() {
+        if (!S.view && S.step >= 1 && S.step <= 5 && !ME()) S.view = "acct"; // booking needs an account
+        hdrSync();
+        if (S.view) {
+          $("#steps").style.display = "none";
+          ({ acct: vAcct, admin: vAdmin })[S.view]();
+          holdBar();
+          return;
+        }
+        $("#steps").innerHTML = NAMES.map(
+          (t, i) =>
+            `<div class="st ${S.step == i + 1 ? "on" : ""} ${S.step > i + 1 ? "done" : ""}"><i>${S.step > i + 1 ? "✓" : i + 1}</i>${t}</div>`,
+        ).join("");
+        $("#steps").style.display = S.step ? "" : "none";
+        [sWelcome, s1, s2, s3, s4, sPay, s5][S.step]();
+        HOLD.reconcile();
+        holdBar();
+      }
+      function s1() {
+        const cityOpts = (skip) => Object.keys(CITY).filter((k) => k != skip).map((k) => `<option value="${k}">${CITY[k]} (${k})</option>`).join("");
+        app.innerHTML = `${promoBanner()}<h1>Where are you flying?</h1><p class="sub">Pick your route and date. All flights are within the Philippines.</p>
+ <div class="card"><div class="grid">
+ <div style="grid-column:1/-1"><div class="seg" role="radiogroup" aria-label="Trip type"><button type="button" class="segb" data-trip="round">⇄ Round trip</button><button type="button" class="segb" data-trip="one">→ One way</button></div></div>
+ <div><label for="f">From</label><select id="f">${cityOpts()}</select></div>
+ <div><label for="t">To</label><select id="t"><option value="">Anywhere (show all)</option>${cityOpts(S.from)}</select></div>
+ <div><label for="d">Departure date</label><input id="d" type="date" min="${today()}" value="${S.date}"></div>
+ <div id="rw"><label for="r">Return date</label><input id="r" type="date" min="${S.date > today() ? S.date : today()}" value="${S.ret}"></div>
+ <div><label for="pp">Passengers</label><div class="pax" id="pax"><button type="button" class="pax-btn" id="pp" aria-haspopup="true" aria-expanded="false"><span><b id="pxl"></b><span class="hint" id="pxd" style="display:block;margin:0"></span></span><span class="car">▾</span></button>
+ <div class="pax-panel" id="pxp">${PAX.map(([k, n, d]) => `<div class="pax-row"><div><b>${n}</b><small>${d}</small></div><div class="pax-ctl"><button type="button" data-k="${k}" data-d="-1" aria-label="Fewer ${n}">-</button><span id="pn-${k}">0</span><button type="button" data-k="${k}" data-d="1" aria-label="More ${n}">+</button></div></div>`).join("")}
+ <div class="pax-foot"><div class="hint" id="pxh"></div><button type="button" class="btn" id="pxa" style="padding:9px 22px">Apply</button></div></div></div></div>
+ <div><label for="c">Preferred cabin class</label><select id="c"><option value="economy">Economy 🔵</option><option value="comfort">Comfort ⚪</option><option value="business">Business 🔴</option></select><div class="hint" id="ch"></div></div>
+ </div><div id="e1" class="err"></div><div class="row"><button class="btn" id="go">Search flights</button></div></div>`;
+        $("#f").value = S.from;
+        $("#t").value = S.to;
+        $("#c").value = S.cab;
+        // cabin availability for the chosen route, shown right in the class picker
+        const cabSync = () => {
+          const fl = FL.filter((f) => !CFG.off.includes(f.id) && f.from == $("#f").value && (!$("#t").value || f.to == $("#t").value)),
+            need = paxTotal(S.pax), keep = $("#c").value || S.cab, low = [];
+          $("#c").innerHTML = ["economy", "comfort", "business"].map((k) => {
+            const best = Math.max(0, ...fl.map((f) => avail(f.id, k)));
+            let st = "";
+            if (fl.length) {
+              if (!best) st = " · Sold out";
+              else if (need && best < need) { st = ` · Only ${best} left`; low.push(CLS[k].n.split(" ")[0]); }
+              else st = ` · ${fl.length > 1 ? "Up to " : ""}${best} seats left`;
+            }
+            return `<option value="${k}">${CLS[k].n.split(" ")[0]} ${CLS[k].c}${st}</option>`;
+          }).join("");
+          $("#c").value = keep;
+          $("#ch").textContent = !fl.length ? "No flights on this route yet." : `${fl.length} flight${fl.length > 1 ? "s" : ""} on this route. Seat counts show the most open seats on a single flight.${low.length ? " Not enough seats for everyone in " + low.join(" and ") + "." : ""}`;
+        };
+        cabSync();
+        $("#f").addEventListener("change", cabSync);
+        $("#t").addEventListener("change", cabSync);
+        const tripSync = () => {
+          app.querySelectorAll("[data-trip]").forEach((b) => b.classList.toggle("on", b.dataset.trip == S.trip));
+          $("#rw").style.display = S.trip == "round" ? "" : "none";
+        };
+        app.querySelectorAll("[data-trip]").forEach((b) => (b.onclick = () => { S.trip = b.dataset.trip; tripSync(); }));
+        tripSync();
+        $("#f").onchange = () => {
+          const keep = $("#t").value;
+          $("#t").innerHTML = '<option value="">Anywhere (show all)</option>' + cityOpts($("#f").value);
+          $("#t").value = keep;
+          if ($("#t").value != keep) $("#t").value = "";
+        };
+        const draft = { ...S.pax },
+          paxEl = $("#pax");
+        const paxSync = () => {
+          const t = paxTotal(draft);
+          PAX.forEach(([k]) => {
+            $("#pn-" + k).textContent = draft[k];
+            const dn = $(`#pxp [data-k="${k}"][data-d="-1"]`),
+              up = $(`#pxp [data-k="${k}"][data-d="1"]`);
+            dn.disabled = draft[k] <= 0;
+            up.disabled = k == "infant" ? t + (draft.infant + 1 > guard(draft) ? 2 : 1) > 9 : t >= 9;
+          });
+          $("#pxa").disabled = t == 0;
+          $("#pxh").textContent = t == 0 ? "Add at least one passenger." : draft.child ? "Max 9. Each child needs travel permission confirmed on the passenger form." : "Max 9. 1 infant per adult. Adding an infant adds an adult automatically.";
+        };
+        const paxShow = () => {
+          $("#pxl").textContent = paxLabel(S.pax);
+          $("#pxd").textContent = paxDetail(S.pax);
+        };
+        const paxToggle = (open) => {
+          paxEl.classList.toggle("open", open);
+          $("#pp").setAttribute("aria-expanded", open);
+          if (open) paxSync();
+        };
+        $("#pp").onclick = () => paxToggle(!paxEl.classList.contains("open"));
+        $("#pxp").onclick = (e) => {
+          const b = e.target.closest("button[data-k]");
+          if (!b || b.disabled) return;
+          draft[b.dataset.k] += +b.dataset.d;
+          if (draft.infant > guard(draft)) {
+            if (b.dataset.k == "infant") draft.adult += 1; // auto-add the adult for this infant
+            else draft.infant = guard(draft);
+          }
+          paxSync();
+        };
+        $("#pxa").onclick = () => {
+          S.pax = { ...draft };
+          cabSync();
+          paxShow();
+          paxToggle(false);
+        };
+        document.onclick = (e) => {
+          if (paxEl.classList.contains("open") && !paxEl.contains(e.target)) {
+            Object.assign(draft, S.pax);
+            paxToggle(false);
+          }
+        };
+        paxShow();
+        $("#d").addEventListener("change", () => { $("#r").min = $("#d").value > today() ? $("#d").value : today(); });
+        $("#go").onclick = () => {
+          if ($("#d").value && $("#d").value < today()) { $("#e1").textContent = "Departure date can't be in the past. Pick today or a later date."; return; }
+          if (!paxTotal(S.pax)) { $("#e1").textContent = "Add at least one passenger."; return; }
+          if (S.trip == "round" && $("#d").value) {
+            if (!$("#r").value) { $("#e1").textContent = "Please pick a return date for your round trip."; return; }
+            if ($("#r").value < $("#d").value) { $("#e1").textContent = "Return date can't be before the departure date."; return; }
+          }
+          if (!$("#d").value) {
+            $("#e1").textContent = "Please pick a departure date.";
+            return;
+          }
+          if ($("#f").value == $("#t").value) {
+            $("#e1").textContent = "Origin and destination must be different.";
+            return;
+          }
+          Object.assign(S, {
+            from: $("#f").value,
+            to: $("#t").value,
+            date: $("#d").value,
+            cab: $("#c").value,
+            ret: S.trip == "round" ? $("#r").value : "",
+            L: [{ flight: null, seats: [] }, { flight: null, seats: [] }],
+            leg: 0,
+            wifi: {},
+            rw: "",
+          });
+          go(2);
+        };
+      }
+      function sWelcome() {
+        app.innerHTML = `<div class="card hero"><div style="font-size:64px">✈️</div><h1>Mabuhay! Welcome aboard</h1>
+ <p class="sub" style="max-width:560px;margin:8px auto 0">Book domestic flights across the Philippines in a few easy steps. Fly one way or round trip, pick your own seat, and pay online.</p>
+ <div class="feat"><div class="pcard" style="margin:0"><div style="font-size:30px">🗺️</div><b>Fly anywhere</b><div class="mute">Manila, Clark, Cebu, Davao, Boracay, Iloilo and Puerto Princesa</div></div>
+ <div class="pcard" style="margin:0"><div style="font-size:30px">💺</div><b>Pick your seat</b><div class="mute">See seats left in every class and choose exactly where you sit</div></div>
+ <div class="pcard" style="margin:0"><div style="font-size:30px">💳</div><b>Easy payment</b><div class="mute">GCash, Maya, cards or online banking</div></div></div>
+ ${promoBanner()}<button class="btn" id="start" style="font-size:19px;padding:15px 40px">Start booking →</button>
+ <div class="hint" style="margin-top:14px">Senior and PWD passengers get 20% off. Passports and other valid government IDs are accepted.</div></div>`;
+        $("#start").onclick = () => go(1);
+      }
+      function lines() {
+        const T = TYPES();
+        return S.seats
+          .map((id, i) => {
+            if (!id) return null;
+            const base = fareOf(S.flight.id, clsOf(id));
+            const d = DISC_TYPES.includes(T[i]);
+            const off = d ? Math.round(base * DISC) : 0;
+            return { i, id, t: T[i], base, off, pay: base - off, d };
+          })
+          .filter(Boolean);
+      }
+      const fareRow = (l, label) =>
+        `<div class="sum"><span>${label || typeName(l.t) + " fare"}</span><b>${l.d ? `<s class="mute" style="font-weight:600;margin-right:6px">${peso(l.base)}</s>` : ""}${peso(l.pay)}</b></div>${l.d ? `<div class="hint" style="margin:0 0 8px">20% ${typeName(l.t)} discount: −${peso(l.off)}</div>` : ""}`;
+      const totalRow = (L, label) => {
+        const saved = L.reduce((a, l) => a + l.off, 0);
+        return `<div class="sum" style="border-top:2px solid var(--line);margin-top:6px;padding-top:10px"><span>${label || "Total"}</span><b style="font-size:22px">${peso(L.reduce((a, l) => a + l.pay, 0))}</b></div>${saved ? `<div class="hint" style="margin:0">You saved ${peso(saved)} with discounts.</div>` : ""}`;
+      };
+      const LEGS = () => (S.trip == "round" ? 2 : 1);
+      const legName = (i) => (LEGS() > 1 ? (i ? "Return" : "Outbound") : "");
+      const allLines = () => {
+        const keep = S.leg, out = [];
+        for (let li = 0; li < LEGS(); li++) { S.leg = li; lines().forEach((l) => out.push({ ...l, leg: li })); }
+        S.leg = keep;
+        return out;
+      };
+      const priceBlock = () => {
+        const G = grand(), saved = G.L.reduce((a, l) => a + l.off, 0);
+        return `<div style="margin-top:14px"><b>Fare breakdown</b>${G.L.map((l) => fareRow(l, `${LEGS() > 1 ? legName(l.leg) + " · " : ""}Seat ${l.id} · ${typeName(l.t)}`)).join("")}${G.W.map((w) => `<div class="sum"><span>📶 ${LEGS() > 1 ? legName(w.leg) + " · " : ""}Passenger ${w.i + 1} · ${xe(w.p.name)}</span><b>${peso(w.price)}</b></div>`).join("")}${G.B.map((b) => `<div class="sum"><span>🧳 ${LEGS() > 1 ? legName(b.leg) + " · " : ""}Passenger ${b.i + 1} · +${b.kg} kg extra baggage</span><b>${peso(b.price)}</b></div>`).join("")}${G.disc ? `<div class="sum"><span>🎁 Reward: ${xe(G.rl)}</span><b style="color:var(--ok)">−${peso(G.disc)}</b></div>` : ""}<div class="sum" style="border-top:2px solid var(--line);margin-top:6px;padding-top:10px"><span>Total</span><b style="font-size:22px">${peso(G.total)}</b></div>${saved ? `<div class="hint" style="margin:0">You saved ${peso(saved)} with discounts.</div>` : ""}</div>`;
+      };
+      const tripRows = () =>
+        S.L.slice(0, LEGS())
+          .flatMap((l, i) => {
+            const f = l.flight, p = LEGS() > 1 ? legName(i) + " " : "";
+            return [[p + "Flight", `${f.air} ${f.id}`], [p + "Route", `${f.from} → ${f.to}`], [p + "Date", i ? S.ret : S.date], [p + "Time", `${f.dep} – ${f.arr}`], [p + "Class", [...new Set(l.seats.map((x) => CLS[clsOf(x)].n))].join(", ")], [p + "Seats", l.seats.join(", ")]];
+          })
+          .concat([["Passengers", paxLabel(S.pax)]]);
+      // seats still open in a cabin (PWD seats are kept apart)
+      const avail = (fid, k) => {
+        let n = 0;
+        CLS[k].rows.forEach((r) => [...CLS[k].L, ...CLS[k].R].forEach((l) => { if (!PWD.includes(r + l) && !takenF(fid, r + l)) n++; }));
+        return n;
+      };
+      const tagFor = (f, k) => {
+        const n = avail(f.id, k), low = n < paxTotal(S.pax) || n <= 5;
+        return `<span class="tag ${k == S.cab ? "pref" : ""}" title="${PERKS[k]}">${CLS[k].c} ${CLS[k].n.split(" ")[0]} ${peso(fareOf(f.id, k))} · <b style="color:${low ? "var(--red)" : "var(--ok)"}">${n ? n + " left" : "Sold out"}</b></span>`;
+      };
+      function s2() {
+        const rt = S.trip == "round", ret = rt && S.leg == 1;
+        const a = ret ? S.L[0].flight.to : S.from, b = ret ? S.L[0].flight.from : S.to;
+        const list = FL.filter((f) => !CFG.off.includes(f.id) && f.from == a && (!b || f.to == b));
+        app.innerHTML = `<h1>${rt ? (ret ? "Choose your return flight" : "Choose your outbound flight") : "Available flights"}</h1><p class="sub">${CITY[a]} (${a})${b ? " to " + CITY[b] : ""} on ${ret ? S.ret : S.date}. Preferred class: <b>${CLS[S.cab].n}</b>. Seats left are shown for every class.</p>
+ ${list.length ? list.map((f) => `<div class="card flight"><div><b>${f.air}</b><div class="mute">${f.id}</div></div>
+ <div><div class="big">${f.dep}</div><div class="mute">${CITY[f.from]} (${f.from})</div></div><div class="mute">Non-stop<br>→</div>
+ <div><div class="big">${f.arr}</div><div class="mute">${CITY[f.to]} (${f.to})</div></div>
+ <div><div class="mute">Gate</div><b>${f.gate}</b></div>
+ <div style="min-width:230px">${["economy", "comfort", "business"].map((k) => tagFor(f, k)).join("")}<div class="mute" style="margin-top:6px">${rt ? "This leg only" : "One-way"}, per passenger · ✈ ${dist(f.from, f.to)} miles${ME() ? "" : " (log in to earn)"}</div></div>
+ <div class="go"><button class="btn alt" data-id="${f.id}">Select flight</button></div></div>`).join("") : `<div class="card">No flights match that route. Try "Anywhere" or another origin.</div>`}
+ <div class="row" style="justify-content:flex-start"><button class="btn alt" id="bk">Back</button></div>`;
+        app.querySelectorAll("[data-id]").forEach((b) => (b.onclick = () => {
+          const f = FL.find((x) => x.id == b.dataset.id);
+          S.ps = [];
+          S.wifi = {}; S.bag = {};
+          if (ret) { S.L[1] = { flight: f, seats: [] }; S.leg = 0; go(3); }
+          else {
+            S.L[0] = { flight: f, seats: [] }; S.L[1] = { flight: null, seats: [] }; S.to = f.to;
+            if (rt) { S.leg = 1; go(2); } else { S.leg = 0; go(3); }
+          }
+        }));
+        $("#bk").onclick = () => { if (ret) { S.leg = 0; go(2); } else go(1); };
+      }
+      const need = () => paxTotal(S.pax);
+      const TYPES = () => PAX.flatMap(([k]) => Array(S.pax[k]).fill(k));
+      const typeName = (k) => PAX.find((x) => x[0] == k)[1];
+      const AGE = { adult: [12, 120], child: [2, 11], infant: [0, 1], senior: [60, 120], pwd: [1, 120] };
+      const NATS = "Filipino,Afghan,Albanian,Algerian,American,Andorran,Angolan,Antiguan and Barbudan,Argentine,Armenian,Australian,Austrian,Azerbaijani,Bahamian,Bahraini,Bangladeshi,Barbadian,Belarusian,Belgian,Belizean,Beninese,Bhutanese,Bolivian,Bosnian and Herzegovinian,Botswanan,Brazilian,British,Bruneian,Bulgarian,Burkinabe,Burmese,Burundian,Cambodian,Cameroonian,Canadian,Cape Verdean,Central African,Chadian,Chilean,Chinese,Colombian,Comoran,Congolese (Congo-Brazzaville),Congolese (DR Congo),Costa Rican,Croatian,Cuban,Cypriot,Czech,Danish,Djiboutian,Dominican (Dominica),Dominican (Dominican Republic),Dutch,East Timorese,Ecuadorian,Egyptian,Emirati,Equatorial Guinean,Eritrean,Estonian,Eswatini,Ethiopian,Fijian,Finnish,French,Gabonese,Gambian,Georgian,German,Ghanaian,Greek,Grenadian,Guatemalan,Guinean,Guinea-Bissauan,Guyanese,Haitian,Honduran,Hong Kong,Hungarian,Icelandic,Indian,Indonesian,Iranian,Iraqi,Irish,Israeli,Italian,Ivorian,Jamaican,Japanese,Jordanian,Kazakhstani,Kenyan,Kiribati,Kosovar,Kuwaiti,Kyrgyz,Lao,Latvian,Lebanese,Liberian,Libyan,Liechtensteiner,Lithuanian,Luxembourgish,Macanese,Malagasy,Malawian,Malaysian,Maldivian,Malian,Maltese,Marshallese,Mauritanian,Mauritian,Mexican,Micronesian,Moldovan,Monegasque,Mongolian,Montenegrin,Moroccan,Mozambican,Namibian,Nauruan,Nepalese,New Zealander,Nicaraguan,Nigerian,Nigerien,North Korean,North Macedonian,Norwegian,Omani,Pakistani,Palauan,Palestinian,Panamanian,Papua New Guinean,Paraguayan,Peruvian,Polish,Portuguese,Qatari,Romanian,Russian,Rwandan,Saint Kitts and Nevis,Saint Lucian,Saint Vincentian,Salvadoran,Samoan,San Marinese,Sao Tomean,Saudi,Senegalese,Serbian,Seychellois,Sierra Leonean,Singaporean,Slovak,Slovenian,Solomon Islander,Somali,South African,South Korean,South Sudanese,Spanish,Sri Lankan,Sudanese,Surinamese,Swedish,Swiss,Syrian,Taiwanese,Tajik,Tanzanian,Thai,Togolese,Tongan,Trinidadian and Tobagonian,Tunisian,Turkish,Turkmen,Tuvaluan,Ugandan,Ukrainian,Uruguayan,Uzbek,Vanuatuan,Vatican,Venezuelan,Vietnamese,Yemeni,Zambian,Zimbabwean".split(",");
+      const natFix = (v) => NATS.find((n) => n.toLowerCase() == v.trim().toLowerCase()) || v.trim();
+      const blank = (i) => ({ fn: (i == 0 && ME() ? ME().fn : ""), mn: "", ln: (i == 0 && ME() ? ME().ln : ""), sf: "", name: "", nat: "Filipino", ppt: "ph", ppi: "", age: "", phone: "", email: (i == 0 && ME() ? ME().email : ""), pwd: false, pwdid: "", sid: "", cc: false, pp: "", ppx: "", ppc: "" });
+
+      // ---- Accepted IDs (Philippine domestic travel) ----
+      // x: 2 = required, must be valid 6+ months after travel (passports)
+      //    1 = required, must be valid on the travel date
+      //    0 = expiry optional (e.g. IBP, OWWA: tied to membership/contract); if given it must still be valid
+      //   -1 = never expires: no expiry field is shown
+      // iss: extra "issued by" field. ex: example shown in the box (rejected if copied as-is)
+      const IDS = {
+        ph: { g: "Passports", n: "Philippine Passport", ex: "P1234567A", re: /^(P\d{7}[A-Z]|[A-Z]{2}\d{7})$/, h: "Letter P + 7 digits + 1 letter (P1234567A), or 2 letters + 7 digits (EB1234567).", x: 2 },
+        fr: { g: "Passports", n: "Foreign Passport", ex: "X12345678", re: /^[A-Z0-9]{6,9}$/, h: "6 to 9 letters/numbers, exactly as printed on the passport.", x: 2, iss: "Passport issued by (country)" },
+        dl: { g: "Government IDs", n: "Philippine Driver's License / Student Permit", ex: "N01-23-456789", re: /^[A-Z]\d{10}$/, h: "LTO number: 1 letter + 10 digits (e.g. N01-23-456789). Licenses last 5 or 10 years; student permits 1 year.", x: 1 },
+        philsys: { g: "Government IDs", n: "PhilSys National ID / e-PhilID", ex: "1234-5678-9012-3456", re: /^\d{16}$/, h: "16-digit PhilSys Card Number (PCN).", x: -1 },
+        umid: { g: "Government IDs", n: "Unified Multi-Purpose ID (UMID)", ex: "0028-1234567-8", re: /^\d{12}$/, h: "12-digit CRN (0000-0000000-0).", x: -1 },
+        prc: { g: "Government IDs", n: "PRC ID", ex: "0123456", re: /^\d{6,8}$/, h: "6 to 8 digit PRC license number.", x: 1 },
+        sss: { g: "Government IDs", n: "SSS ID / SSS Card", ex: "34-1234567-8", re: /^\d{10}$/, h: "10-digit SSS number (00-0000000-0).", x: -1 },
+        gsis: { g: "Government IDs", n: "GSIS e-Card", ex: "12345678901", re: /^\d{11,12}$/, h: "11-digit GSIS BP number or 12-digit CRN.", x: -1 },
+        voter: { g: "Government IDs", n: "Voter's ID / COMELEC Voter's Certification (photo, dry seal)", ex: "1234-5678A-1234B", re: /^[A-Z0-9]{8,22}$/, h: "Voter's ID number or certification number, 8 to 22 letters/numbers.", x: -1 },
+        postal: { g: "Government IDs", n: "Postal ID", ex: "ABC123456789", re: /^[A-Z0-9]{10,14}$/, h: "Postal ID reference number (PRN), about 12 letters/numbers.", x: 1 },
+        senior: { g: "Government IDs", n: "Senior Citizen ID", ex: "OSCA-123456", re: /^[A-Z0-9]{6,20}$/, h: "OSCA / Senior Citizen ID number, 6 to 20 letters/numbers.", x: -1 },
+        pwd: { g: "Government IDs", n: "PWD ID", ex: "12-3456-789-0000000", re: /^\d{16}$/, h: "16 digits in the format RR-PPMM-BBB-NNNNNNN.", x: -1 },
+        seaman: { g: "Government IDs", n: "Seaman's Book / MARINA ID", ex: "SIRB1234567", re: /^[A-Z0-9]{6,15}$/, h: "Seafarer's book (SIRB) or MARINA ID number.", x: 1 },
+        nbi: { g: "Government IDs", n: "NBI Clearance / Police Clearance", ex: "NBI2024123456", re: /^[A-Z0-9]{8,20}$/, h: "Clearance number printed on the document. Valid 6 months to 1 year, so check the date.", x: 1 },
+        tin: { g: "Government IDs", n: "TIN ID", ex: "123-456-789-000", re: /^\d{9}(\d{3})?$/, h: "9 digits, or 12 digits with the branch code.", x: -1 },
+        philhealth: { g: "Government IDs", n: "PhilHealth ID (with photo)", ex: "12-345678901-2", re: /^\d{12}$/, h: "12-digit PhilHealth Identification Number (PIN).", x: -1 },
+        ibp: { g: "Government IDs", n: "IBP ID", ex: "IBP12345", re: /^[A-Z0-9]{4,15}$/, h: "IBP lifetime / membership number.", x: 0 },
+        owwa: { g: "Government IDs", n: "OWWA ID / OFW ID", ex: "OWWA123456", re: /^[A-Z0-9]{6,20}$/, h: "OWWA / OFW e-card number.", x: 0 },
+        company: { g: "Other IDs & documents", n: "Company ID (government or regulated private office)", ex: "EMP-0001", re: /^[A-Z0-9]{3,20}$/, h: "Employee number printed on the ID.", x: 1, iss: "Company / office name" },
+        school: { g: "Other IDs & documents", n: "School ID (signed by principal or school head)", ex: "2024-00001", re: /^[A-Z0-9]{3,20}$/, h: "Student number. The ID must be signed by the principal or school head.", x: 1, iss: "School name" },
+        birth: { g: "Other IDs & documents", n: "PSA / NSO Birth Certificate (minors without a government ID)", ex: "REG123456", re: /^[A-Z0-9]{5,25}$/, h: "Registry number on the PSA certificate. For infants, toddlers and children without a government ID.", x: -1, minor: true },
+      };
+      const normId = (v) => String(v || "").toUpperCase().replace(/[\s-]/g, "");
+      const idFake = (s) => { const d = s.replace(/\D/g, ""); return /^(.)\1+$/.test(s) || /^(.)\1{5,}/.test(d) || (d.length >= 6 && ("01234567890123456789".includes(d) || "98765432109876543210".includes(d))); };
+      const maskId = (v) => { const s = normId(v); return s.length >= 8 ? s.slice(0, 2) + "•••" + s.slice(-2) : s.slice(0, 1) + "•••" + s.slice(-1); };
+      const idOpts = (sel) => Object.entries(IDS).reduce((a, [k, d]) => { (a[d.g] = a[d.g] || []).push([k, d]); return a; }, {}),
+        idSelect = (sel, type) => type == "infant" ? `<option value="birth" selected>${IDS.birth.n}</option>` : Object.entries(idOpts()).map(([g, l]) => `<optgroup label="${g}">${l.map(([k, d]) => `<option value="${k}" ${sel == k ? "selected" : ""}>${d.n}</option>`).join("")}</optgroup>`).join("");
+      const feats = (id) => {
+        const l = id.slice(-1),
+          c = clsOf(id),
+          r = parseInt(id),
+          win = c == "business" ? "AD".includes(l) : "AF".includes(l),
+          aisle = c == "business" ? "BC".includes(l) : "CD".includes(l),
+          f = [];
+        f.push(win ? "Window seat" : aisle ? "Aisle seat" : "Middle seat");
+        if (PWD.includes(id)) f.push("♿ PWD seat");
+        if (EXITROWS.includes(r)) f.push("Next to emergency exit");
+        if (LAVROWS.includes(r)) f.push("Close to restroom");
+        return f;
+      };
+      function seatBtn(id) {
+        const t = taken(id),
+          p = PWD.includes(id),
+          lv = HOLD.state(S.flight.id, curDate(), id);
+        return `<button class="seat ${p ? "pwd" : ""} ${S.seats.includes(id) ? "sel" : ""} ${lv == "held" ? "held" : ""}" title="${lv == "held" ? "Another traveller is booking this seat right now" : ""}" data-s="${id}" ${t ? "disabled" : ""} aria-label="Seat ${id}${p ? ", PWD seat" : ""}${t ? ", taken" : ""}">${id}${p ? "<small>♿</small>" : ""}</button>`;
+      }
+      function s3(keep) {
+        if (!keep) S.msg = "";
+        const y = window.scrollY;
+        // one slot per passenger; each passenger keeps their own seat, no pick order
+        S.seats = Array.from({ length: need() }, (_, i) => S.seats[i] || null);
+        if (!(S.act >= 0 && S.act < need())) S.act = 0;
+        if (!keep && S.seats.some((x) => !x)) S.act = S.seats.findIndex((x) => !x);
+        const any = S.seats.find(Boolean);
+        const lit = S.last && S.seats.includes(S.last) ? clsOf(S.last) : any ? clsOf(any) : S.cab;
+        const cols = (c) => `<div class="cols"><div class="pair">${[...c.L].map((l) => `<span>${l}</span>`).join("")}</div><div></div><div class="pair">${[...c.R].map((l) => `<span>${l}</span>`).join("")}</div></div>`;
+        const exitBar = (wing) => `<div class="exit ${wing ? "wing" : ""}"><span>◄ EMERGENCY EXIT</span><span>EMERGENCY EXIT ►</span></div>`;
+        const zones = Object.entries(CLS)
+          .map(
+            ([k, c]) => `<section class="zone ${k} ${lit == k ? "lit" : ""}" data-z="${k}">
+ <div class="zh"><span>${c.c} ${c.n} · ${peso(fareOf(S.flight.id, k))} · ${avail(S.flight.id, k)} left</span><span class="chip">🚻 Restroom</span></div><div style="font-size:13px;margin:-4px 0 8px;opacity:.85">${PERKS[k]}</div>${cols(c)}
+ ${(() => {
+   // overhead storage runs in segments and stops at each emergency exit bar, then starts again
+   const bins = '<div class="bin l" title="Overhead storage">Overhead storage</div><div class="bin r" title="Overhead storage">Overhead storage</div>';
+   let out = "", cur = "";
+   const flush = () => {
+     if (cur) out += `<div class="rows">${bins}${cur}</div>`;
+     cur = "";
+   };
+   c.rows.forEach((r) => {
+     cur += `<div class="srow"><div class="pair">${[...c.L].map((l) => seatBtn(r + l)).join("")}</div><div class="rn">${r}</div><div class="pair">${[...c.R].map((l) => seatBtn(r + l)).join("")}</div></div>`;
+     if (k == "economy" && r == 17) {
+       flush();
+       out += exitBar(false);
+     }
+   });
+   flush();
+   return out;
+ })()}
+ </section>${k == "comfort" ? exitBar(true) : ""}`,
+          )
+          .join("");
+        app.innerHTML = `<h1>Choose your seat${S.trip == "round" ? (S.leg ? " · Return" : " · Outbound") : ""}</h1><p class="sub">${S.flight.air} ${S.flight.id} · ${CITY[S.flight.from]} to ${CITY[S.flight.to]}. ${need() > 1 ? "Choose a passenger on the right, then tap a seat for them. Seats can be changed any time." : "Tap a seat and its whole cabin lights up."}</p>
+ <div class="layout"><div class="card ${S.pwdOn ? "glow" : ""}" id="map"><div class="plane"><div class="cabin"><div class="nose">✈ FRONT OF AIRCRAFT</div><div class="cockpit"><i></i><i></i></div>${zones}<div class="tail">🚻 Rear restrooms · REAR OF AIRCRAFT</div></div></div></div>
+ <div><div class="card"><b>Seat guide</b><ul class="key" style="margin-top:12px">
+ <li><span class="sw" style="background:#fff"></span>Available</li><li><span class="sw" style="background:#1b2333"></span>Your seat(s)</li><li><span class="sw" style="background:#c9cfdb;border-color:#aab2c3"></span>Taken</li>
+ <li><span class="sw" style="background:#fff;border-color:#7b3fe4;border-width:3px"></span>♿ PWD seat</li><li><span class="sw" style="background:#ffd43b"></span>Emergency exit</li><li>🚻 Restroom &nbsp; 🧳 Overhead storage <span class="mute">(strips beside the seats in the aisle)</span></li>
+ <li>🔴 Business &nbsp; ⚪ Comfort &nbsp; 🔵 Economy</li></ul>
+ <div class="ck"><input type="checkbox" id="pw" ${S.pwdOn ? "checked" : ""}><label for="pw" style="margin:0">Show me the PWD seats</label></div>
+ <div style="margin-top:8px"></div></div>
+ ${foodCard()}${bagInfoCard()}
+ <div class="card" style="margin-top:16px" id="info">${info()}</div></div></div>`;
+        const T3 = TYPES();
+        app.querySelectorAll("[data-s]").forEach(
+          (b) =>
+            (b.onclick = () => {
+              const id = b.dataset.s,
+                i = S.seats.indexOf(id);
+              if (i > -1) {
+                HOLD.release(S.flight.id, curDate(), id);
+                S.seats[i] = null;
+                S.act = i;
+                S.last = null;
+                S.msg = "";
+              } else {
+                const a = S.act;
+                if (PWD.includes(id) && T3[a] != "pwd") {
+                  S.msg = S.pax.pwd
+                    ? "PWD seats are only for PWD passengers. Select your PWD passenger first."
+                    : "PWD seats are reserved for PWD passengers. Add a PWD passenger under Passengers to book one.";
+                  s3(true);
+                  return;
+                }
+                S.msg = "";
+                const place = async () => {
+                  if (S.claiming) return;
+                  S.claiming = true;
+                  let ok = false;
+                  try { ok = await HOLD.claim(S.flight.id, curDate(), id); } finally { S.claiming = false; }
+                  if (!ok) { S.msg = `Seat ${id} was just taken by another traveller. Please choose a different seat.`; s3(true); return; }
+                  const old = S.seats[a];
+                  if (old && old != id) HOLD.release(S.flight.id, curDate(), old);
+                  S.seats[a] = id;
+                  S.last = id;
+                  const nx = S.seats.findIndex((x) => !x);
+                  if (nx > -1) S.act = nx;
+                  s3(true);
+                };
+                const newCls = clsOf(id);
+                if (newCls != S.cab) {
+                  confirmClassChange(id, a, T3[a], newCls, place);
+                  return;
+                }
+                place();
+                return;
+              }
+              s3(true);
+            }),
+        );
+        app.querySelectorAll("[data-p]").forEach(
+          (c) =>
+            (c.onclick = () => {
+              S.act = +c.dataset.p;
+              S.msg = "";
+              s3(true);
+            }),
+        );
+        window.scrollTo(0, y);
+        if (!keep && !S.seats.some(Boolean)) {
+          const z = app.querySelector(".zone.lit");
+          if (z && S.cab != "business") z.scrollIntoView({ block: "start" });
+        }
+        $("#pw").onchange = (e) => {
+          S.pwdOn = e.target.checked;
+          $("#map").classList.toggle("glow", S.pwdOn);
+        };
+        $("#cont").onclick = () => {
+          if (S.trip == "round" && S.leg == 0) { S.leg = 1; S.act = 0; S.last = null; go(3); }
+          else { S.leg = 0; go(4); }
+        };
+        $("#bk").onclick = () => { if (S.leg == 1) { S.leg = 0; S.act = 0; S.last = null; go(3); } else go(2); };
+      }
+      // Asks the passenger to confirm before moving to a different cabin class than the one chosen on page 1
+      function confirmClassChange(seatId, idx, type, newCls, onYes) {
+        const oldCls = S.cab,
+          disc = DISC_TYPES.includes(type),
+          price = (c) => {
+            const b = fareOf(S.flight.id, c);
+            return disc ? b - Math.round(b * DISC) : b;
+          },
+          oldP = price(oldCls),
+          newP = price(newCls),
+          diff = newP - oldP,
+          up = diff > 0,
+          who = need() > 1 ? `Passenger ${idx + 1} (${typeName(type)})` : "Your seat";
+        const ov = document.createElement("div");
+        ov.className = "ovl";
+        ov.innerHTML = `<div class="card dlg" role="dialog" aria-modal="true" aria-labelledby="ccT"><h1 id="ccT" style="font-size:24px">Change cabin class?</h1>
+ <p class="sub">You picked <b>${CLS[oldCls].n}</b> when searching, but seat <b>${seatId}</b> is in <b>${CLS[newCls].n}</b>.</p>
+ <div class="pcard"><div class="sum"><span class="mute">${CLS[oldCls].c} ${CLS[oldCls].n}</span><b>${peso(oldP)}</b></div>
+ <div class="sum"><span class="mute">${CLS[newCls].c} ${CLS[newCls].n}</span><b>${peso(newP)}</b></div>
+ <div class="sum" style="border-bottom:0"><span><b>Price difference</b></span><b style="font-size:22px;color:${up ? "var(--red)" : "var(--ok)"}">${up ? "+" : diff < 0 ? "−" : ""}${peso(Math.abs(diff))}</b></div></div>
+ <div class="hint">${who}: ${up ? "you will pay more" : "you will pay less"} per ticket${disc ? " (20% discount already included)" : ""}. ${PERKS[newCls]}.</div>
+ <div class="row"><button class="btn alt" id="cc-no">Keep ${CLS[oldCls].n}</button><button class="btn" id="cc-yes">Yes, change to ${CLS[newCls].n}</button></div></div>`;
+        document.body.appendChild(ov);
+        const close = () => {
+          ov.remove();
+          document.removeEventListener("keydown", esc);
+        };
+        const esc = (e) => e.key == "Escape" && close();
+        document.addEventListener("keydown", esc);
+        $("#cc-no").onclick = close;
+        $("#cc-yes").onclick = () => {
+          close();
+          S.cab = newCls;
+          onYes();
+        };
+        $("#cc-no").focus();
+      }
+      function info() {
+        const n = need(),
+          T = TYPES(),
+          L = lines(),
+          k = L.length;
+        const btns = `<div class="row"><button class="btn alt" id="bk">Back</button><button class="btn" id="cont" ${k == n ? "" : "disabled"}>${S.trip == "round" && S.leg == 0 ? "Next: return seats" : "Continue"}</button></div>`;
+        const msg = S.msg ? `<div class="note" style="margin-bottom:10px">♿ ${S.msg}</div>` : "";
+        const cards = S.seats
+          .map((id, i) => {
+            const l = L.find((x) => x.i == i),
+              multi = n > 1;
+            return `<div class="pcard ${multi && S.act == i ? "act" : ""}" ${multi ? `data-p="${i}"` : ""}>
+ <div class="sum"><span><b>Passenger ${i + 1}</b> · ${typeName(T[i])}</span><b style="font-size:20px">${id ? "Seat " + id : multi && S.act == i ? "Tap a seat" : "No seat yet"}</b></div>
+ ${id ? `<div class="mute">${CLS[clsOf(id)].c} ${CLS[clsOf(id)].n}</div><div style="margin:8px 0 6px">${feats(id).map((x) => `<span class="tag">${x}</span>`).join("")}</div>${fareRow(l)}` : ""}</div>`;
+          })
+          .join("");
+        return `${msg}${n > 1 ? `<div class="hint" style="margin-bottom:10px">Tap a passenger, then tap a seat for them. Tap a chosen seat again to unselect it.</div>` : ""}${cards}
+ ${k ? totalRow(L, k < n ? "Total so far" : "Total") : ""}
+ ${k < n ? `<div class="hint">Pick ${n - k} more seat${n - k > 1 ? "s" : ""} to continue.</div>` : ""}${btns}`;
+      }
+      function s4() {
+        S.leg = 0;
+        const f = S.flight,
+          T = TYPES(),
+          N = S.seats.length;
+        S.ps = S.seats.map((_, i) => S.ps[i] || blank(i));
+        S.ps.forEach((p, i) => {
+          p.pwd = T[i] == "pwd";
+          if (!p.pwd) p.pwdid = "";
+          if (T[i] == "infant") p.ppt = "birth";
+          else if (p.ppt == "birth" && T[i] != "child") p.ppt = "ph";
+        });
+        const form = (p, i) => {
+          const sid = S.seats[i],
+            opt = i > 0 ? " (optional)" : "",
+            d = PAX.find((x) => x[0] == T[i])[2];
+          return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px"><b style="font-size:19px">Passenger ${i + 1} · ${typeName(T[i])}</b><span class="tag">Seat ${S.L.slice(0, LEGS()).map((l) => l.seats[i]).join(" / ")}</span></div>
+ <div style="display:grid;gap:16px">
+ <div class="grid"><div><label for="fn${i}">First name</label><input id="fn${i}" value="${p.fn}" autocomplete="off"><div class="err" id="efn${i}"></div></div>
+ <div><label for="mn${i}">Middle name (optional)</label><input id="mn${i}" value="${p.mn}" autocomplete="off"></div>
+ <div><label for="ln${i}">Surname</label><input id="ln${i}" value="${p.ln}" autocomplete="off"><div class="err" id="eln${i}"></div></div>
+ <div><label for="sf${i}">Suffix (optional)</label><select id="sf${i}">${["", "Jr.", "Sr.", "II", "III", "IV", "V"].map((s) => `<option value="${s}" ${p.sf == s ? "selected" : ""}>${s || "None"}</option>`).join("")}</select></div></div>
+ <div class="grid"><div><label for="a${i}">Age</label><input id="a${i}" type="number" value="${p.age}"><div class="hint">${typeName(T[i])}: ${d}</div><div class="err" id="ea${i}"></div></div>
+ <div><label for="ph${i}">Contact number${opt}</label><input id="ph${i}" type="tel" value="${p.phone}" placeholder="+63 917 123 4567"><div class="err" id="ep${i}"></div></div></div>
+ <div><label for="em${i}">Email${opt}</label><input id="em${i}" type="email" value="${p.email}" placeholder="you@email.com"><div class="err" id="ee${i}"></div></div>
+ <div class="ppbox"><b>🛂 ID verification</b>
+ <div class="grid" style="margin-top:12px"><div><label for="nt${i}">Nationality</label><div class="cb"><input id="nt${i}" role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="ntl${i}" value="${p.nat}" autocomplete="off" placeholder="Search nationality"><ul class="cbl" id="ntl${i}" role="listbox"></ul></div><div class="err" id="ent${i}"></div></div>
+ <div><label for="pt${i}">Valid ID to present</label><select id="pt${i}">${idSelect(p.ppt, T[i])}</select></div></div>
+ <div id="isw${i}" style="margin-top:12px;${IDS[p.ppt] && IDS[p.ppt].iss ? "" : "display:none"}"><label for="is${i}" id="isl${i}">Issued by</label><input id="is${i}" value="${p.ppi}" placeholder=""><div class="err" id="eis${i}"></div></div>
+ <div class="grid" style="margin-top:12px"><div><label for="pp${i}" id="ppl${i}">ID number</label><input id="pp${i}" value="${p.pp}" placeholder="" maxlength="30" autocapitalize="characters" autocomplete="off"><div class="hint" id="pph${i}"></div><div class="err" id="epp${i}"></div></div>
+ <div><label for="px${i}" id="pxl${i}">ID expiry date</label><input id="px${i}" type="date" value="${p.ppx}"><div class="err" id="epx${i}"></div></div></div>
+ <div style="margin-top:12px"><label for="pc${i}">Re-type ID number to confirm</label><input id="pc${i}" value="${p.ppc}" placeholder="Type it again" maxlength="30" autocapitalize="characters" autocomplete="off"><div class="err" id="epc${i}"></div></div></div>
+ ${T[i] == "pwd" ? `<div class="ck"><input type="checkbox" id="pw${i}" checked disabled><label for="pw${i}" style="margin:0">I need PWD / accessibility support (registered as a PWD passenger)</label></div>` : ""}
+ ${T[i] == "senior" ? `<div><label for="si${i}">Senior Citizen ID number</label><input id="si${i}" value="${p.sid || ""}" placeholder="OSCA ID number"><div class="hint">Required for the 20% Senior discount. Bring this ID to the airport, it will be checked at the counter.</div><div class="err" id="esd${i}"></div></div>` : ""}${T[i] == "child" ? `<div class="ck"><input type="checkbox" id="cc${i}" ${p.cc ? "checked" : ""}><label for="cc${i}" style="margin:0">I confirm this child is allowed to travel: they are travelling with a parent or legal guardian, or I am their parent/guardian and I give permission for this trip.</label></div><div class="err" id="ecc${i}"></div>` : ""}<div id="pn${i}"></div></div></div>`;
+        };
+        const cls = [...new Set(S.seats.map((x) => CLS[clsOf(x)].n))].join(", ");
+        app.innerHTML = `<h1>Passenger information</h1><p class="sub">Use each name exactly as it appears on their ID. ${N} passenger${N > 1 ? "s" : ""}, one form per seat.</p>
+ <div class="layout"><div><div style="display:grid;gap:16px">${S.ps.map(form).join("")}</div>
+ ${bagCard()}${wifiCard()}
+ <div class="note" style="margin-top:16px">🛡️ <b>Stay safe from scams.</b> We never ask for your ID photo, OTP, or card PIN by chat, text or email. Only book on this official page, and check that every name and ID number matches the ID exactly.</div>
+ <div class="ck" style="margin-top:16px"><input type="checkbox" id="decl"><label for="decl" style="margin:0">I confirm that every name and ID number above matches the passenger's ID exactly. I understand wrong details may mean being denied boarding.</label></div><div class="err" id="edecl"></div>
+ <div class="row"><button class="btn alt" id="bk">Back</button><button class="btn" id="ok">Review &amp; confirm booking</button></div></div>
+ <div><div class="card"><b>Booking summary</b><div style="margin-top:8px">
+ ${[
+   ...tripRows(),
+ ]
+   .map((x) => `<div class="sum"><span class="mute">${x[0]}</span><b>${x[1]}</b></div>`)
+   .join("")}</div>${priceBlock()}</div></div></div>`;
+        const save = () =>
+          S.ps.forEach((p, i) => {
+            const pi = $("#pi" + i);
+            Object.assign(p, {
+              fn: $("#fn" + i).value.trim(),
+              mn: $("#mn" + i).value.trim(),
+              ln: $("#ln" + i).value.trim(),
+              sf: $("#sf" + i).value,
+              name: [$("#fn" + i).value.trim(), $("#mn" + i).value.trim(), $("#ln" + i).value.trim(), $("#sf" + i).value].filter(Boolean).join(" "),
+              nat: natFix($("#nt" + i).value),
+              ppt: $("#pt" + i).value,
+              ppi: $("#is" + i).value.trim(),
+              sid: $("#si" + i) ? $("#si" + i).value.trim() : p.sid || "",
+              age: $("#a" + i).value,
+              cc: $("#cc" + i) ? $("#cc" + i).checked : false,
+              phone: $("#ph" + i).value.trim(),
+              email: $("#em" + i).value.trim(),
+              pp: $("#pp" + i).value.trim().toUpperCase(),
+              ppx: $("#px" + i).value,
+              ppc: $("#pc" + i).value.trim().toUpperCase(),
+              pwd: T[i] == "pwd",
+              pwdid: pi ? pi.value.trim() : T[i] == "pwd" ? p.pwdid || "" : "",
+            });
+          });
+        S.saveForm = save;
+        const tip = (i) => {
+          const p = S.ps[i],
+            el = $("#pn" + i);
+          if ($("#pi" + i)) p.pwdid = $("#pi" + i).value;
+          p.pwd = T[i] == "pwd";
+          if (!p.pwd) {
+            el.innerHTML = PWD.includes(S.seats[i])
+              ? `<div class="note">♿ Seat ${S.seats[i]} is reserved for PWD passengers. <button class="btn alt" data-chg style="padding:6px 14px;margin-left:6px">Pick another seat</button></div>`
+              : "";
+            const b = el.querySelector("[data-chg]");
+            if (b)
+              b.onclick = () => {
+                save();
+                go(3);
+              };
+            return;
+          }
+          el.innerHTML = p.pwd
+            ? `<div><label for="pi${i}">PWD ID number</label><input id="pi${i}" value="${p.pwdid || ""}" placeholder="e.g. 12-3456-789-0000000"><div class="hint">Required for PWD support. Bring this ID to the airport, it will be checked at the counter.</div><div class="err" id="ei${i}"></div></div>` +
+              (PWD.includes(S.seats[i])
+                ? ""
+                : `<div class="note">♿ Seat ${S.seats[i]} isn't a PWD seat. <button class="btn alt" data-chg style="padding:6px 14px;margin-left:6px">Pick a PWD seat</button></div>`)
+            : "";
+          const c = el.querySelector("[data-chg]");
+          if (c)
+            c.onclick = () => {
+              S.pwdOn = true;
+              save();
+              go(3);
+            };
+        };
+        S.ps.forEach((_, i) => {
+          tip(i);
+        });
+        const refreshSum = () => {
+          const c = app.querySelector(".layout > div:last-child > .card");
+          if (c) c.innerHTML = `<b>Booking summary</b><div style="margin-top:8px">${tripRows().map((x) => `<div class="sum"><span class="mute">${x[0]}</span><b>${x[1]}</b></div>`).join("")}</div>${priceBlock()}`;
+        };
+        bindBag(refreshSum);
+        app.querySelectorAll("[data-wf]").forEach((sel) => (sel.onchange = () => { S.wifi[sel.dataset.wf] = sel.value; const e = $("#ewf"); if (e) e.textContent = ""; refreshSum(); }));
+        S.ps.forEach((_, i) => {
+          const nt = $("#nt" + i), pt = $("#pt" + i), w = $("#isw" + i);
+          const sync = () => {
+            const d = IDS[pt.value] || IDS.ph;
+            w.style.display = d.iss ? "" : "none";
+            if (d.iss) { $("#isl" + i).textContent = d.iss; $("#is" + i).placeholder = d.iss.includes("country") ? "e.g. United States" : "Type the name"; }
+            $("#ppl" + i).textContent = d.n.split(" (")[0] + " number";
+            $("#pp" + i).placeholder = "e.g. " + d.ex;
+            $("#pph" + i).textContent = T[i] == "infant" ? "Infants only need the PSA birth certificate. Enter the registry number printed on it." : d.h;
+            $("#px" + i).parentElement.style.display = T[i] == "infant" || d.x < 0 ? "none" : "";
+            if (T[i] == "infant" || d.x < 0) $("#px" + i).value = "";
+            $("#pxl" + i).textContent = d.x == 2 ? "Passport expiry date" : d.x == 1 ? "ID expiry date" : "ID expiry date (if shown)";
+          };
+          sync();
+          const ul = $("#ntl" + i);
+          let hi = 0, shown = [];
+          const close = () => { ul.style.display = "none"; nt.setAttribute("aria-expanded", "false"); };
+          const draw = () => {
+            const q = nt.value.trim().toLowerCase();
+            shown = NATS.filter((n) => n.toLowerCase().includes(q)).sort((a, b) => (b.toLowerCase().startsWith(q) - a.toLowerCase().startsWith(q)));
+            hi = Math.min(hi, shown.length - 1);
+            ul.innerHTML = shown.length ? shown.map((n, k) => `<li role="option" data-n="${n}" class="${k == hi ? "on" : ""}">${n}</li>`).join("") : '<li class="none">No match. Try another spelling.</li>';
+            ul.style.display = "block";
+            nt.setAttribute("aria-expanded", "true");
+            const on = ul.querySelector(".on");
+            if (on) on.scrollIntoView({ block: "nearest" });
+          };
+          const pick = (n) => { nt.value = n; if (T[i] != "infant") { if (n != "Filipino") pt.value = "fr"; else if (pt.value == "fr") pt.value = "ph"; } sync(); close(); };
+          nt.onfocus = () => { nt.select(); hi = 0; draw(); };
+          nt.oninput = () => { hi = 0; draw(); };
+          nt.onkeydown = (e) => {
+            if (e.key == "ArrowDown" || e.key == "ArrowUp") { e.preventDefault(); if (ul.style.display != "block") return draw(); hi = (hi + (e.key == "ArrowDown" ? 1 : -1) + shown.length) % (shown.length || 1); draw(); }
+            else if (e.key == "Enter" && ul.style.display == "block" && shown[hi]) { e.preventDefault(); pick(shown[hi]); }
+            else if (e.key == "Escape") close();
+          };
+          ul.onmousedown = (e) => { const li = e.target.closest("li[data-n]"); if (li) { e.preventDefault(); pick(li.dataset.n); } };
+          nt.onblur = () => { close(); const m = NATS.find((n) => n.toLowerCase() == nt.value.trim().toLowerCase()); if (m) pick(m); };
+          pt.onchange = sync;
+        });
+        $("#bk").onclick = () => {
+          save();
+          go(3);
+        };
+        $("#ok").onclick = () => {
+          save();
+          let bad = false;
+          S.ps.forEach((q, i) => {
+            const e = {},
+              [lo, hi] = AGE[T[i]];
+            if (q.fn.length < 2) e.fn = "Enter the first name.";
+            if (q.ln.length < 2) e.ln = "Enter the surname.";
+            if (!NATS.includes(q.nat)) e.nt = "Choose a nationality from the list.";
+            if (T[i] == "child" && !q.cc) e.cc = "Please confirm this child is allowed to travel.";
+            const D = IDS[q.ppt] || IDS.ph, nid = normId(q.pp), tripEnd = new Date(S.trip == "round" && S.ret ? S.ret : S.date);
+            if (D.iss && q.ppi.length < 3) e.is = q.ppt == "fr" ? "Enter the country that issued the passport." : "Enter the name of the " + (q.ppt == "school" ? "school" : "company or office") + " on the ID.";
+            if (T[i] == "infant" && q.ppt != "birth") e.pp = "Infants only need a PSA birth certificate.";
+            else if (T[i] != "infant" && q.nat != "Filipino" && q.ppt != "ph" && q.ppt != "fr") e.pp = "Foreign nationals must use a passport.";
+            if (D.minor && T[i] != "infant" && +q.age >= 18) e.pp = "A birth certificate can only be used for passengers under 18 without a government ID.";
+            if (T[i] == "senior" && (q.sid || "").length < 6) e.sd = "Enter the Senior Citizen ID number (at least 6 characters).";
+            if (q.age === "" || !Number.isInteger(+q.age) || +q.age < lo || +q.age > hi)
+              e.a = `Enter an age from ${lo} to ${hi} for ${typeName(T[i])}.`;
+            if ((i == 0 || q.phone) && q.phone.replace(/\D/g, "").length < 10)
+              e.p = "Enter a valid phone number (at least 10 digits).";
+            if ((i == 0 || q.email) && !/^\S+@\S+\.\S+$/.test(q.email))
+              e.e = "Enter a valid email like you@email.com.";
+            if (T[i] != "pwd" && PWD.includes(S.seats[i]))
+              e.s = "PWD seats are only for PWD passengers.";
+            if (!e.pp) {
+              if (!nid) e.pp = "Enter the ID number.";
+              else if (!D.re.test(nid)) e.pp = "That doesn't look like a valid " + D.n.split(" (")[0] + " number. " + D.h;
+              else if (idFake(nid) || nid == normId(D.ex)) e.pp = "That looks like a sample or made-up number. Enter the real number printed on the ID.";
+              else if (S.ps.some((o, j) => j < i && normId(o.pp) == nid && o.ppt == q.ppt)) e.pp = "This ID number is already used for another passenger.";
+            }
+            if (D.x < 0 || T[i] == "infant") q.ppx = "";
+            if (!q.ppx) { if (D.x > 0 && T[i] != "infant") e.px = "Enter the expiry date shown on the " + (D.x == 2 ? "passport" : "ID") + "."; }
+            else {
+              const lim = new Date(tripEnd);
+              if (D.x == 2) lim.setMonth(lim.getMonth() + 6);
+              if (new Date(q.ppx) < lim)
+                e.px = D.x == 2 ? "Passport must be valid for at least 6 months after the travel date." : "This ID will be expired on your travel date. Use a valid ID.";
+            }
+            if (!e.pp && normId(q.ppc) !== nid) e.pc = "ID numbers don't match. Please check.";
+            if (q.pwd && q.pwdid.length < 6)
+              e.i = "Enter the PWD ID number (at least 6 characters).";
+            ["fn", "ln", "nt", "is", "sd", "a", "p", "e", "i", "s", "pp", "px", "pc", "cc"].forEach((k) => {
+              const el = $("#e" + k + i);
+              if (el) el.textContent = e[k] || "";
+            });
+            if (Object.keys(e).length) bad = true;
+          });
+          const dc = $("#edecl");
+          dc.textContent = $("#decl").checked ? "" : "Please tick the confirmation box to continue.";
+          if (!$("#decl").checked) bad = true;
+          const we = wifiCheck();
+          if ($("#ewf")) $("#ewf").textContent = we;
+          if (we) bad = true;
+          const be = bagCheck();
+          if ($("#ebg")) $("#ebg").textContent = be;
+          if (be) bad = true;
+          if (bad) {
+            const first = app.querySelector(".err:not(:empty), .note");
+            if (first) first.scrollIntoView({ block: "center" });
+            return;
+          }
+          reviewDialog();
+        };
+        function reviewDialog() {
+          const ov = document.createElement("div");
+          ov.className = "ovl";
+          ov.innerHTML = `<div class="card dlg" role="dialog" aria-modal="true" aria-label="Verify passenger details"><h1 style="font-size:24px">Verify before you pay</h1><p class="sub">Check each name and ID number against the actual ID.</p>
+ ${S.ps.map((q, i) => `<div class="pcard"><b>Passenger ${i + 1}: ${q.name}</b><div class="mute">${IDS[q.ppt].n.split(" (")[0]}: <b>${q.pp}</b>${q.ppx ? " · Expires " + q.ppx : ""} · ${q.nat}${IDS[q.ppt].iss && q.ppi ? " (" + q.ppi + ")" : ""}</div><div class="mute">Seat ${S.L.slice(0, LEGS()).map((l) => l.seats[i]).join(" / ")} · ${S.L.slice(0, LEGS()).map((l) => l.flight.id).join(" / ")} · ${S.date}${LEGS() > 1 ? " → " + S.ret : ""}</div>${T[i] == "child" ? '<div class="mute">✔ Permission to travel confirmed for this child</div>' : ""}</div>`).join("")}
+ <div class="row"><button class="btn alt" id="rv-edit">Edit details</button><button class="btn" id="rv-ok">Yes, all correct. Book</button></div></div>`;
+          document.body.appendChild(ov);
+          $("#rv-edit").onclick = () => ov.remove();
+          $("#rv-ok").onclick = () => {
+            ov.remove();
+            finish();
+          };
+        }
+        function finish() {
+          S.ref =
+            "PH-" +
+            (1000 + hash(S.ps.map((q) => q.name).join("") + S.seats.join("")) * 9) +
+            "-" + Date.now().toString(36).slice(-4).toUpperCase();
+          S.pay = null;
+          go(5);
+        }
+      }
+      const PAYM = [
+        ["gcash", "GCash", "📱", "E-wallet"],
+        ["maya", "Maya", "💚", "E-wallet"],
+        ["card", "Credit / Debit card", "💳", "Visa or Mastercard"],
+        ["bank", "Online banking", "🏦", "BDO, BPI, UnionBank and more"],
+      ];
+      const BANKS = ["BDO", "BPI", "Metrobank", "UnionBank", "Landbank", "Security Bank"];
+      const luhn = (n) => {
+        let sum = 0,
+          dbl = false;
+        for (let i = n.length - 1; i >= 0; i--) {
+          let x = +n[i];
+          if (dbl) {
+            x *= 2;
+            if (x > 9) x -= 9;
+          }
+          sum += x;
+          dbl = !dbl;
+        }
+        return sum % 10 == 0;
+      };
+      function sPay() {
+        S.leg = 0;
+        const G = grand(),
+          total = G.total;
+        S.pm = S.pm || "gcash";
+        const f = S.flight;
+        app.innerHTML = `<h1>Payment</h1><p class="sub">Pay securely online to confirm your booking. Your seats are held while you pay.</p>
+ <div class="layout"><div>${rewardBox(G)}<div class="card"><b style="font-size:19px">Choose how to pay</b>
+ <div class="pms" role="radiogroup" aria-label="Payment method">${PAYM.map(([k, n, ic, d]) => `<button type="button" class="pm ${S.pm == k ? "on" : ""}" role="radio" aria-checked="${S.pm == k}" data-pm="${k}"><span class="pmi">${ic}</span><span><b>${n}</b><small>${d}</small></span></button>`).join("")}</div>
+ <div id="pf" style="margin-top:16px"></div>
+ <div class="note">🔒 <b>Demo payment.</b> No real money is charged and nothing you type here is saved or sent anywhere. For testing, use card <b>4242 4242 4242 4242</b> with any 3-digit CVV.</div>
+ <div class="note" style="background:var(--redbg)">🛡️ Never share your OTP, PIN or MPIN with anyone, even if they say they're from the airline.</div></div>
+ <div class="row"><button class="btn alt" id="bk">Back</button><button class="btn" id="payb">Pay ${peso(total)}</button></div></div>
+ <div><div class="card"><b>Booking summary</b><div style="margin-top:8px">
+ ${tripRows().map((x) => `<div class="sum"><span class="mute">${x[0]}</span><b>${x[1]}</b></div>`).join("")}</div>${priceBlock()}</div></div></div>`;
+        const fields = () => {
+          const m = S.pm,
+            name = PAYM.find((x) => x[0] == m)[1];
+          if (m == "gcash" || m == "maya")
+            return `<label for="pw1">${name} mobile number</label><input id="pw1" type="tel" inputmode="tel" autocomplete="tel" placeholder="0917 123 4567" value="${(S.ps[0] && S.ps[0].phone) || ""}"><div class="err" id="epw1"></div><div class="hint">You'll be asked to approve ${peso(total)} in your ${name} app.</div>`;
+          if (m == "bank")
+            return `<label for="pb1">Choose your bank</label><select id="pb1">${BANKS.map((b) => `<option>${b}</option>`).join("")}</select><div class="err" id="epb1"></div><div class="hint">You'll be taken to your bank's secure page to log in and approve.</div>`;
+          return `<div style="display:grid;gap:14px"><div><label for="cn">Name on card</label><input id="cn" autocomplete="cc-name" placeholder="JUAN DELA CRUZ" style="text-transform:uppercase"><div class="err" id="ecn"></div></div>
+ <div><label for="cc">Card number</label><input id="cc" inputmode="numeric" autocomplete="cc-number" placeholder="1234 5678 9012 3456" maxlength="19"><div class="hint" id="ccb"></div><div class="err" id="ecc"></div></div>
+ <div class="grid"><div><label for="cv">CVV</label><input id="cv" type="password" inputmode="numeric" autocomplete="cc-csc" placeholder="123" maxlength="4"><div class="err" id="ecv"></div></div></div></div>`;
+        };
+        const draw = () => {
+          $("#pf").innerHTML = fields();
+          const cc = $("#cc"),
+            ce = $("#ce");
+          if (cc)
+            cc.oninput = () => {
+              const d = cc.value.replace(/\D/g, "").slice(0, 16);
+              cc.value = d.replace(/(.{4})(?=.)/g, "$1 ");
+              const b = /^4/.test(d) ? "Visa" : /^(5[1-5]|2[2-7])/.test(d) ? "Mastercard" : "";
+              $("#ccb").textContent = b ? "💳 " + b : "";
+            };
+          if (ce)
+            ce.oninput = () => {
+              let v = ce.value.replace(/\D/g, "").slice(0, 4);
+              if (v.length > 2) v = v.slice(0, 2) + "/" + v.slice(2);
+              ce.value = v;
+            };
+        };
+        draw();
+        app.querySelectorAll("[data-pm]").forEach(
+          (b) =>
+            (b.onclick = () => {
+              S.pm = b.dataset.pm;
+              app.querySelectorAll("[data-pm]").forEach((x) => {
+                x.classList.toggle("on", x == b);
+                x.setAttribute("aria-checked", x == b);
+              });
+              draw();
+            }),
+        );
+        const rwS = $("#rw");
+        if (rwS) rwS.onchange = () => { S.rw = rwS.value; sPay(); };
+        const rwL = $("#rwlogin");
+        if (rwL) rwL.onclick = () => { S.am = "in"; toggleView("acct"); };
+        $("#bk").onclick = () => go(4);
+        $("#payb").onclick = () => {
+          const m = S.pm,
+            err = {};
+          let mask = "";
+          if (total <= 0) {
+            mask = "Reward";
+          } else if (m == "gcash" || m == "maya") {
+            const d = $("#pw1").value.replace(/\D/g, "");
+            if (!/^(63|0)?9\d{9}$/.test(d)) err.pw1 = "Enter a valid PH mobile number, like 0917 123 4567.";
+            mask = "0" + d.slice(-10, -7) + "•••" + d.slice(-4);
+          } else if (m == "bank") {
+            mask = $("#pb1").value;
+          } else {
+            const n = $("#cn").value.trim(),
+              num = $("#cc").value.replace(/\s/g, ""),
+              
+              cv = $("#cv").value;
+            if (n.length < 3) err.cn = "Enter the name on the card.";
+            if (!/^(4\d{15}|5[1-5]\d{14}|2[2-7]\d{14})$/.test(num)) err.cc = "Enter a 16-digit Visa or Mastercard number.";
+            else if (!luhn(num)) err.cc = "That card number isn't valid. Please check each digit.";
+            if (!/^\d{3,4}$/.test(cv)) err.cv = "Enter the 3 or 4 digit CVV.";
+            mask = "•••• " + num.slice(-4);
+          }
+          const keys = { gcash: ["pw1"], maya: ["pw1"], bank: [], card: ["cn", "cc", "cv"] }[m];
+          keys.forEach((k) => {
+            const el = $("#e" + k);
+            if (el) el.textContent = err[k] || "";
+          });
+          if (Object.keys(err).length) {
+            const first = app.querySelector(".err:not(:empty)");
+            if (first) first.scrollIntoView({ block: "center" });
+            return;
+          }
+          const name = total <= 0 ? "Reward (no payment)" : PAYM.find((x) => x[0] == m)[1],
+            msg = total <= 0 ? "Confirming your booking…" : { gcash: "Waiting for your approval in the GCash app…", maya: "Waiting for your approval in the Maya app…", card: "Processing your card securely…", bank: "Connecting to " + mask + " secure page…" }[m];
+          const ov = document.createElement("div");
+          ov.className = "ovl";
+          ov.setAttribute("aria-live", "polite");
+          ov.innerHTML = `<div class="card dlg" style="text-align:center"><div class="spin"></div><b style="font-size:19px">${msg}</b><p class="sub" style="margin:8px 0 0">Please don't close or refresh this page.</p></div>`;
+          document.body.appendChild(ov);
+          $("#payb").disabled = true;
+          S.paying = true;
+          setTimeout(async () => {
+            const we = wifiCheck();
+            if (we) {
+              ov.remove(); S.paying = false;
+              go(4);
+              if ($("#ewf")) { $("#ewf").textContent = we + " You were not charged."; $("#ewf").scrollIntoView({ block: "center" }); }
+              return;
+            }
+            const be = bagCheck();
+            if (be) {
+              ov.remove(); S.paying = false;
+              go(4);
+              if ($("#ebg")) { $("#ebg").textContent = be + " You were not charged."; $("#ebg").scrollIntoView({ block: "center" }); }
+              return;
+            }
+            const lost = await HOLD.confirm();
+            ov.remove();
+            S.paying = false;
+            if (lost.length) {
+              // someone else got a seat while this person was paying: nothing is charged or booked
+              await HOLD.extend();
+              S.L.forEach((l, li) => { l.seats = l.seats.map((x) => (lost.some((m) => m.fid == l.flight.id && m.date == (li ? S.ret : S.date) && m.seat == x) ? null : x)); });
+              lost.forEach((m) => HOLD.forget(m.fid, m.date, m.seat));
+              S.leg = S.L.findIndex((l, li) => li < LEGS() && l.seats.some((x) => !x)); if (S.leg < 0) S.leg = 0;
+              S.act = 0; S.pay = null;
+              go(3);
+              S.msg = "Payment was not completed and you were not charged. Seat " + lost.map((m) => m.seat).join(", ") + " was taken by another traveller while you were paying. Please choose another seat.";
+              s3(true);
+              return;
+            }
+            S.pay = {
+              m: name,
+              mask,
+              amt: total,
+              ref: "TXN-" + (100000 + hash(S.ref + m + total) * 877),
+              at: new Date().toLocaleString("en-PH"),
+            };
+            recordBooking(G, total);
+            go(6);
+          }, 2200);
+        };
+      }
+      function s5() {
+        S.leg = 0;
+        const T = TYPES();
+        const tickets = [...Array(LEGS()).keys()].flatMap((li) => {
+          S.leg = li;
+          const f = S.flight, L = lines();
+          const out = S.ps.map((q, i) => {
+            const id = S.seats[i], c = clsOf(id);
+            return `<div class="ticket" style="text-align:left"><div><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><b style="font-size:20px">${f.air}${LEGS() > 1 ? ` · ${legName(li)}` : ""}</b><span class="mute">Ref: <b>${S.ref}</b></span></div>
+ <div class="tg"><div><div class="mute">Passenger ${i + 1} of ${S.ps.length}</div><b>${q.name}</b><div class="mute">${typeName(T[i])}, ${q.age} yrs · ${q.nat}</div></div><div><div class="mute">Flight</div><b>${f.id}</b></div>
+ <div><div class="mute">Seat</div><b>${id} (${CLS[c].n})</b></div><div><div class="mute">Gate</div><b>${f.gate}</b></div>
+ <div><div class="mute">Departs ${CITY[f.from]} (${f.from})</div><div class="big">${f.dep}</div><div class="mute">${li ? S.ret : S.date}</div></div>
+ <div><div class="mute">Arrives ${CITY[f.to]} (${f.to})</div><div class="big">${f.arr}</div></div></div>
+ <div style="margin-top:12px"><span class="tag">Fare ${peso(L[i].pay)}${L[i].d ? " · 20% discount" : ""}</span></div>
+ <div style="margin-top:12px"><span class="tag">🛂 ${IDS[q.ppt].n.split(" (")[0]}${IDS[q.ppt].iss && q.ppi ? " (" + q.ppi + ")" : ""} ${maskId(q.pp)} · ID checked ✓</span></div>
+ ${T[i] == "senior" && q.sid ? `<div style="margin-top:12px"><span class="tag">🧓 Senior · ID: ${q.sid}</span></div>` : ""}
+ ${(() => { const wp = wifiPkg(S.wifi[li + ":" + i]); return wp && wifiOn(f.id) ? `<div style="margin-top:12px"><span class="tag">📶 ${xe(wp.name)} · Activation code <b>${wcode(li, i)}</b></span><div class="hint">Connect to the aircraft Wi-Fi once airborne and enter this code.</div></div>` : ""; })()}
+ ${(() => { const a = bagAllow(li, i), o = bagExtra(li, i); return `<div style="margin-top:12px"><span class="tag">🧳 Checked baggage ${a.chk + (o ? o.kg : 0)} kg${o ? ` (${a.chk} kg + ${o.kg} kg extra)` : " included"} · Hand-carry ${a.cab} kg</span></div>`; })()}
+ ${q.pwd ? `<div style="margin-top:12px"><span class="tag">♿ PWD support · ID: ${q.pwdid}</span></div>` : ""}</div>
+ <div class="stub"><div><div style="font-size:54px">▦</div><div class="mute">Boarding pass</div></div></div></div>`;
+          });
+          S.leg = 0;
+          return out;
+        }).join("");
+        app.innerHTML = `<div class="card" style="text-align:center"><div class="ok">✓</div><h1>Booking confirmed</h1><p class="sub">${paxLabel(S.pax)} booked (${LEGS() > 1 ? "round trip" : "one way"})${S.pay ? ` and payment of ${peso(S.pay.amt)} received` : ""}. Save or print your receipt below.</p>
+ ${milesNote()}${tickets}
+ <div class="card" style="text-align:left;max-width:520px;margin:16px auto"><b>Payment summary</b>${priceBlock()}${S.pay ? `<div style="margin-top:14px"><b>Payment</b><div class="sum"><span class="mute">Status</span><b style="color:var(--ok)">Paid ✓</b></div><div class="sum"><span class="mute">Method</span><b>${S.pay.m}${S.pay.mask ? " · " + S.pay.mask : ""}</b></div><div class="sum"><span class="mute">Transaction</span><b>${S.pay.ref}</b></div><div class="sum"><span class="mute">Date</span><b>${S.pay.at}</b></div></div>` : ""}</div>
+ <div class="row" style="justify-content:center"><button class="btn" onclick="print()">Print / save receipt</button><button class="btn alt" id="home">Back to home</button></div></div>`;
+        $("#home").onclick = () => {
+          Object.assign(S, { wifi: {}, bag: {}, rw: "", earned: 0, rwUsed: "", fo: {}, to: "", ret: "", trip: "one", pax: { adult: 0, child: 0, infant: 0, senior: 0, pwd: 0 }, L: [{ flight: null, seats: [] }, { flight: null, seats: [] }], leg: 0, act: 0, ps: [], pwdOn: false, pay: null, pm: "" });
+          go(0);
+        };
+      }
+      // Light / dark mode: follows the device by default, remembers a manual choice
+      (function () {
+        const root = document.documentElement,
+          btn = document.getElementById("themeBtn"),
+          mq = window.matchMedia("(prefers-color-scheme: dark)");
+        let saved = null;
+        try { saved = localStorage.getItem("theme"); } catch (e) {}
+        const current = () => root.getAttribute("data-theme") || (mq.matches ? "dark" : "light");
+        const paint = () => {
+          const dark = current() == "dark";
+          btn.innerHTML = dark ? "☀️ Light mode" : "🌙 Dark mode";
+          btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+        };
+        if (saved == "light" || saved == "dark") root.setAttribute("data-theme", saved);
+        btn.onclick = () => {
+          const next = current() == "dark" ? "light" : "dark";
+          root.setAttribute("data-theme", next);
+          try { localStorage.setItem("theme", next); } catch (e) {}
+          paint();
+        };
+        mq.addEventListener && mq.addEventListener("change", () => {
+          if (!root.getAttribute("data-theme")) paint();
+        });
+        paint();
+      })();
+
+      // ---- live status bar, countdown, live seat-map refresh ----
+      const bar = document.createElement("div");
+      bar.id = "holdbar";
+      bar.innerHTML = '<span id="hp"></span><span id="ht"></span><button class="hb" id="hx" type="button">Add 10 min</button>';
+      $("#steps").after(bar);
+      $("#hx").onclick = () => HOLD.extend();
+      function holdBar() {
+        const n = Object.keys(HOLD.mine).length, ms = HOLD.deadline - Date.now(), active = S.step >= 3 && S.step <= 5;
+        bar.style.display = S.step == 6 || S.view == "admin" ? "none" : "";
+        $("#hp").textContent = !HOLD.ready ? "… connecting live seats" : HOLD.mode == "db" ? "🟢 Live seats · shared across all devices" : HOLD.mode == "local" ? "🟡 Live seats · this browser only" : "⚪ Live seats offline";
+        $("#hp").title = HOLD.note || "";
+        const t = $("#ht");
+        if (n && active && ms > 0) {
+          const m = Math.floor(ms / 6e4), sec = String(Math.floor(ms / 1000) % 60).padStart(2, "0");
+          t.textContent = `⏱ ${n} seat${n > 1 ? "s" : ""} held for you: ${m}:${sec}`;
+          t.className = ms < 18e4 ? "warn" : "";
+        } else t.textContent = "";
+        $("#hx").style.display = n && active && ms < 18e4 ? "" : "none";
+      }
+      function refreshSeats() {
+        if (!S.flight) return;
+        const fid = S.flight.id, d = curDate();
+        const lost = S.seats.map((x, i) => (x && HOLD.isTaken(fid, d, x) ? i : -1)).filter((i) => i > -1);
+        if (lost.length) {
+          const ids = lost.map((i) => S.seats[i]);
+          lost.forEach((i) => { HOLD.forget(fid, d, S.seats[i]); S.seats[i] = null; });
+          S.act = lost[0];
+          S.msg = "Seat " + ids.join(", ") + " was just taken by another traveller. Please pick a different seat.";
+          s3(true);
+          return;
+        }
+        app.querySelectorAll("[data-s]").forEach((b) => {
+          const id = b.dataset.s, lv = HOLD.state(fid, d, id), t = taken(id) && !S.seats.includes(id);
+          if (b.disabled != t) b.disabled = t;
+          b.classList.toggle("held", lv == "held");
+          b.title = lv == "held" ? "Another traveller is booking this seat right now" : "";
+        });
+      }
+      HOLD.onchange = () => { if (S.step == 3 && !S.view) refreshSeats(); holdBar(); };
+      setInterval(() => {
+        const n = Object.keys(HOLD.mine).length;
+        if (n && HOLD.deadline && Date.now() > HOLD.deadline && S.step >= 3 && S.step <= 5 && !S.paying) {
+          // hold ran out: free the seats so others can book them
+          Object.values(HOLD.mine).forEach((m) => HOLD.release(m.fid, m.date, m.seat));
+          S.L.forEach((l) => { l.seats = l.seats.map(() => null); });
+          S.leg = 0; S.act = 0; HOLD.deadline = 0;
+          document.querySelectorAll(".ovl").forEach((o) => o.remove());
+          go(3);
+          S.msg = "Your seat hold timed out, so the seats were released for other travellers. Please choose your seats again.";
+          s3(true);
+        }
+        holdBar();
+      }, 1000);
+      HOLD.init();
+      render();
+    </script>
+  </body>
+</html>
